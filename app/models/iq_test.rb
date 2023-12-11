@@ -1,2 +1,0 @@
-class IqTest < ApplicationRecord
-end

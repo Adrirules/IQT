@@ -14,7 +14,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_10_103931) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "iq_tests", force: :cascade do |t|
+  create_table "iqtests", force: :cascade do |t|
     t.string "name"
     t.text "description"
     t.datetime "created_at", null: false

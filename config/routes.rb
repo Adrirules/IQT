@@ -1,14 +1,14 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Defines the root path route ("/")
-  # root "articles#index"
-  Rails.application.routes.draw do
+  # Utilise devise_for pour générer les routes de devise pour les utilisateurs
   devise_for :users
-  # ... autres routes ...
-    root to: "pages#home"
-    get "about", to: "pages#about"
-    get "contact", to: "pages#contact"
 
-  end
+  # Définit la route racine ("/") vers le contrôleur pages#home
+  root to: "pages#home"
+
+  # Ajoute les routes pour les pages about et contact
+  get "about", to: "pages#about"
+  get "contact", to: "pages#contact"
+
+  # Ajoute les routes pour le CRUD de la ressource IqTest
+  resources :iqtests
 end

@@ -1,0 +1,16 @@
+<!-- app/views/iqtests/show.html.erb -->
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @iqtest.name %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @iqtest.description %>
+</p>
+
+<%= link_to 'Edit', edit_iqtest_path(@iqtest) %> |
+<%= link_to 'Back', iqtests_path %>
+        <td><%= link_to "Delete", iqtest_path(@iqtest), data: {turbo_method: :delete, turbo_confirm: "Are you sure?"} %></td>
