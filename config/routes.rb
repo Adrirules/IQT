@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'questions/new'
   # Utilise devise_for pour générer les routes de devise pour les utilisateurs
   devise_for :users
 
@@ -10,5 +11,9 @@ Rails.application.routes.draw do
   get "contact", to: "pages#contact"
 
   # Ajoute les routes pour le CRUD de la ressource IqTest
-  resources :iqtests
+  resources :iqtests do
+    resources :questions, only: [:new, :edit, :create]
+  end
+  resources :questions, only: [:destroy]
 end
+

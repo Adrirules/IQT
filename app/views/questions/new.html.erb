@@ -1,0 +1,11 @@
+<h1>Questions#new</h1>
+<p>Find me in app/views/questions/new.html.erb</p>
+
+
+<h1>New question</h1>
+<div class="container">
+  <%= simple_form_for [@iqtest, @question] do |f| %>
+  <%= f.input :contentq, label: "Question : " %>
+  <%= f.submit "Submit questions", class: "btn btn-primary" %>
+  <% end %>
+</div>
