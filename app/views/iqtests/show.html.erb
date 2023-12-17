@@ -14,17 +14,18 @@
 <%= link_to 'Edit', edit_iqtest_path(@iqtest) %> |
 <%= link_to 'Back', iqtests_path %> |
 <%= link_to 'Add a Question', new_iqtest_question_path(@iqtest) %> |
-<%= link_to "Delete", iqtest_path(@iqtest), data: {turbo_method: :delete, turbo_confirm: "Are you sure?"} %>|
-
+<%= link_to "Delete", iqtest_path(@iqtest), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %>
 
 <p><strong>Questions</strong></p>
 <ul class="list-group">
   <% @iqtest.questions.each do |question| %>
-    <li class="list-group-item"><%= question.contentq %>
-    <%= button_to "Destroy", question_path(question), class: "btn btn-danger", method: :delete, data: { confirm: 'Are you sure?' } %>
+    <li class="list-group-item">
+      <%= question.contentq %>
+      <%= button_to "Destroy", question_path(question), class: "btn btn-danger", method: :delete, data: { confirm: 'Are you sure?' } %>
+      <%= link_to "Show Question", iqtest_question_path(@iqtest, question) %>
 
+      <%= link_to "Add Option", new_iqtest_question_option_path(@iqtest, question) %>
     </li>
   <% end %>
 </ul>
 <br>
-

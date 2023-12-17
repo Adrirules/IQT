@@ -1,4 +1,5 @@
 <!-- app/views/iqtests/index.html.erb -->
+<!--
 <h1>Iq Tests</h1>
 
 <table>
@@ -18,7 +19,39 @@
         <td><%= link_to 'Show', iqtest_path(iqtest) %></td>
         <td><%= link_to 'Edit', edit_iqtest_path(iqtest) %></td>
         <td><%= button_to "Destroy", iqtest_path(iqtest), class: "btn btn-danger", method: :delete, data: { confirm: 'Are you sure?' } %></td>
-  <!-- Gérer le cas où @iqtest est nil, par exemple, afficher un message d'erreur ou un lien alternatif -->
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Iq Test', new_iqtest_path %>
+
+
+-->
+
+<!-- app/views/iqtests/index.html.erb -->
+<h1>Iq Tests</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @iqtests.each do |iqtest| %>
+      <tr>
+        <td><%= iqtest.name %></td>
+        <td><%= iqtest.description %></td>
+        <td><%= link_to 'Show', iqtest_path(iqtest) %></td>
+        <td><%= link_to 'Edit', edit_iqtest_path(iqtest) %></td>
+        <td><%= button_to "Destroy", iqtest_path(iqtest), class: "btn btn-danger", method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= link_to 'New Question', new_iqtest_question_path(iqtest), class: "btn btn-primary" %></td> <!-- Nouveau lien -->
       </tr>
     <% end %>
   </tbody>

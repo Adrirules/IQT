@@ -1,0 +1,37 @@
+<!-- app/views/questions/_form.html.erb -->
+<%= form_for([@iqtest, @question], url: iqtest_questions_path(@iqtest)) do |f| %>
+  <% if @question.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@question.errors.count, "error") %> prohibited this question from being saved:</h2>
+
+      <ul>
+        <% @question.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :contentq %>
+    <%= f.text_field :contentq %>
+  </div>
+
+  <div class="field">
+    <% 4.times do |index| %>
+      <%= f.fields_for :options, @question.options[index] || @question.options.build do |option_form| %>
+        <%= option_form.label :reponse %>
+        <%= option_form.text_field :reponse %>
+
+        <%= option_form.label :isreponsecorrect %>
+        <%= option_form.radio_button :isreponsecorrect, true %> <!-- Utilisez des boutons radio -->
+
+        <%= option_form.check_box :_destroy %> <%= option_form.label :_destroy, 'Remove Option' %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Create Question" %>
+  </div>
+<% end %>

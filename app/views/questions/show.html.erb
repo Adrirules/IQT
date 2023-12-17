@@ -1,0 +1,24 @@
+<!-- app/views/questions/show.html.erb -->
+<h1><%= @question.contentq %></h1>
+
+<p><strong>IQTest:</strong> <%= @iqtest.name %></p>
+
+<% if @options.any? %>
+  <h2>Options:</h2>
+  <ul>
+    <% @options.each do |option| %>
+      <li>
+        <%= option.reponse %> (Correct: <%= option.isreponsecorrect ? 'Yes' : 'No' %>)
+        <%= link_to 'Edit', edit_iqtest_question_option_path(@iqtest, @question, option) %>
+        <%= link_to 'Delete', iqtest_question_option_destroy_path(@iqtest, @question, option), method: :delete, data: { confirm: 'Are you sure?' } %>
+        <%= button_to 'Delete', iqtest_question_option_destroy_path(@iqtest, @question, option), method: :delete, data: { confirm: 'Are you sure?' } %>
+
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>Aucune option disponible pour cette question.</p>
+<% end %>
+
+<%= link_to 'Add Option', new_iqtest_question_option_path(@iqtest, @question) %>
+<%= link_to 'Back to IQTest', iqtest_path(@iqtest) %>

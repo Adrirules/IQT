@@ -16,6 +16,13 @@ class QuestionsController < ApplicationController
     end
   end
 
+  def show
+    @iqtest = Iqtest.find(params[:iqtest_id])
+    @question = Question.find(params[:id])
+    # Vous pouvez également récupérer les options associées à la question si nécessaire
+    @options = @question.options
+  end
+
 =begin
   def edit
   end
@@ -37,6 +44,8 @@ class QuestionsController < ApplicationController
 
   private
   def question_params
-    params.require(:question).permit(:contentq)
+    #params.require(:question).permit(:contentq)
+    params.require(:question).permit(:contentq, options_attributes: [:reponse, :isreponsecorrect, :image, :_destroy, :id])
+
   end
 end

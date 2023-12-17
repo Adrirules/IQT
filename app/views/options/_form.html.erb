@@ -1,0 +1,19 @@
+<!-- app/views/options/_form.html.erb -->
+<%= form_with(model: [@iqtest, @question, option], local: true) do |form| %>
+  <% if option.persisted? %>
+    <%= form.hidden_field :id %>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :reponse %>
+    <%= form.text_field :reponse %>
+    <%= option.errors.full_messages_for :reponse %>
+  </div>
+
+  <div class="field">
+    <%= form.label :isreponsecorrect %>
+    <%= form.check_box :isreponsecorrect %> <!-- Utilisez des cases à cocher -->
+  </div>
+
+  <%= form.submit option.persisted? ? "Update Option" : "Create Option" %>
+<% end %>

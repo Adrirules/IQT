@@ -1,0 +1,8 @@
+<!-- app/views/questions/_option_fields.html.erb -->
+<div class="nested-fields">
+  <%= f.text_field :reponse, placeholder: 'Option' %>
+  <%= f.check_box :isreponsecorrect %>
+  <%= f.text_field :image, placeholder: 'Image URL' %>
+  <%= f.check_box :_destroy, class: 'remove-option' %>
+  <%= f.label :_destroy, 'Remove option' %>
+</div>
