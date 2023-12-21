@@ -7,4 +7,5 @@ require("channels")
 // Ajoutez la ligne suivante pour inclure cocoon
 require("cocoon")
 
-// Le reste de votre fichier application.js
+import 'core-js/stable'
+import 'regenerator-runtime/runtime'

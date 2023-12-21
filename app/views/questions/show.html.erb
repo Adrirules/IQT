@@ -10,8 +10,7 @@
       <li>
         <%= option.reponse %> (Correct: <%= option.isreponsecorrect ? 'Yes' : 'No' %>)
         <%= link_to 'Edit', edit_iqtest_question_option_path(@iqtest, @question, option) %>
-        <%= link_to 'Delete', iqtest_question_option_destroy_path(@iqtest, @question, option), method: :delete, data: { confirm: 'Are you sure?' } %>
-        <%= button_to 'Delete', iqtest_question_option_destroy_path(@iqtest, @question, option), method: :delete, data: { confirm: 'Are you sure?' } %>
+        <%= button_to 'Delete', iqtest_question_option_destroy_path(@iqtest, @question, option),class: "btn btn-danger", method: :delete, data: { confirm: 'Are you sure?' } %>
 
       </li>
     <% end %>
