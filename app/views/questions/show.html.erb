@@ -1,7 +1,14 @@
 <!-- app/views/questions/show.html.erb -->
-<h1><%= @question.contentq %></h1>
-
 <p><strong>IQTest:</strong> <%= @iqtest.name %></p>
+
+<h1> <strong>Question:</strong>  <%= @question.contentq %></h1>
+<% if policy(@question).edit? %>
+  <%= link_to "Edit", edit_iqtest_question_path(@iqtest, @question) %> |
+<% end %>
+
+<% if policy(@question).destroy? %>
+  <%= button_to "Destroy", iqtest_question_path(@iqtest, @question),class: "btn btn-danger", method: :delete, data: { confirm: 'Are you sure?' } %>
+<% end %>
 
 <% if @options.any? %>
   <h2>Options:</h2>
@@ -9,15 +16,19 @@
     <% @options.each do |option| %>
       <li>
         <%= option.reponse %> (Correct: <%= option.isreponsecorrect ? 'Yes' : 'No' %>)
-        <%= link_to 'Edit', edit_iqtest_question_option_path(@iqtest, @question, option) %>
-        <%= button_to 'Delete', iqtest_question_option_destroy_path(@iqtest, @question, option),class: "btn btn-danger", method: :delete, data: { confirm: 'Are you sure?' } %>
-
+        <% if policy(option).edit? %>
+          <%= link_to 'Edit', edit_iqtest_question_option_path(@iqtest, @question, option) %>
+        <% end %>
+        <% if policy(option).destroy? %>
+          <%= button_to 'Delete', iqtest_question_option_destroy_path(@iqtest, @question, option),class: "btn btn-danger", method: :delete, data: { confirm: 'Are you sure?' } %>
+        <% end %>
       </li>
     <% end %>
   </ul>
 <% else %>
   <p>Aucune option disponible pour cette question.</p>
 <% end %>
-
-<%= link_to 'Add Option', new_iqtest_question_option_path(@iqtest, @question) %>
+<% if policy(@question).create_option? %>
+  <%= link_to 'Add Option', new_iqtest_question_option_path(@iqtest, @question) %>
+<% end %>
 <%= link_to 'Back to IQTest', iqtest_path(@iqtest) %>

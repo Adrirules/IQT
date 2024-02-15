@@ -4,4 +4,6 @@ class Iqtest < ApplicationRecord
   validates :description, presence: true
 
   has_many  :questions, dependent: :destroy
+  belongs_to :user
+
 end

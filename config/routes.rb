@@ -14,10 +14,12 @@ Rails.application.routes.draw do
 
   # Ajoute une route pour la suppression d'une option
   delete 'iqtests/:iqtest_id/questions/:question_id/options/:id', to: 'options#destroy', as: 'iqtest_question_option_destroy'
+# Ajoute une route pour la suppression d'une question
+  delete 'iqtests/:iqtest_id/questions/:question_id', to: 'questions#destroy', as: 'iqtest_question_destroy'
 
   # Ajoute les routes pour le CRUD de la ressource IqTest
   resources :iqtests do
-    resources :questions, only: [:new, :edit, :create, :show] do
+    resources :questions, only: [:new, :create,:show, :edit, :update] do
       resources :options, only: [:new, :create, :show, :edit, :update]
     end
   end

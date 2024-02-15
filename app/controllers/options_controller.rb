@@ -1,15 +1,19 @@
 class OptionsController < ApplicationController
   before_action :set_question_and_iqtest
   before_action :set_question_and_option, only: [:show, :new, :create, :edit, :update, :destroy]
+  before_action :authenticate_user!
   def new
     @option = Option.new
+    authorize @option
   end
 
   def show
+    authorize @option
   end
 
   def create
     @option = @question.options.build(option_params)
+      authorize @option
     if @option.save
       redirect_to iqtest_question_path(@iqtest, @question), notice: 'Option was successfully created.'
     else
@@ -18,9 +22,11 @@ class OptionsController < ApplicationController
   end
 
   def edit
+    authorize @option
   end
 
   def update
+    authorize @option
     if @option.update(option_params)
       redirect_to iqtest_question_path(@iqtest, @question), notice: 'Option was successfully updated.'
     else
@@ -29,6 +35,7 @@ class OptionsController < ApplicationController
   end
 
   def destroy
+    authorize @option
     @option.destroy
     redirect_to iqtest_question_path(@iqtest, @question), notice: 'Option was successfully destroyed.'
   end
@@ -53,8 +60,6 @@ class OptionsController < ApplicationController
               Option.find_by(id: params[:id], question_id: @question.id)
             end
   end
-
-
 
   def option_params
     params.require(:option).permit(:reponse, :isreponsecorrect)

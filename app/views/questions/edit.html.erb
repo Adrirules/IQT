@@ -1,3 +1,4 @@
+<!-- app/views/questions/edit.html.erb -->
 <%= form_for [@iqtest, @question] do |f| %>
   <% if @question.errors.any? %>
     <div id="error_explanation">
@@ -16,8 +17,7 @@
     <%= f.text_area :contentq %>
   </div>
 
-
   <div class="actions">
-    <%= f.submit 'Create Question' %>
+    <%= f.submit 'Update Question' %>
   </div>
 <% end %>

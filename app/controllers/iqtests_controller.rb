@@ -1,8 +1,9 @@
 class IqtestsController < ApplicationController
   before_action :set_iqtest, only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_user!
 
   def index
-    @iqtests = Iqtest.all
+    @iqtests = policy_scope(Iqtest)
   end
 
   def show
@@ -10,12 +11,17 @@ class IqtestsController < ApplicationController
 
   def new
     @iqtest = Iqtest.new
+    authorize @iqtest
   end
 
   def create
-    @iqtest = Iqtest.new(iqtest_params)
-    @iqtest.save
-    redirect_to iqtest_path(@iqtest), notice: 'IQ Test was successfully created.'
+    @iqtest = current_user.iqtests.build(iqtest_params)
+      if @iqtest.save
+        redirect_to iqtest_path(@iqtest), notice: 'IQ Test was successfully created.'
+      else
+        render :new  # En cas d'échec, vous pouvez rediriger vers la page de création ou faire ce qui convient à votre cas
+      end
+    authorize @iqtest
   end
 
   def edit
@@ -36,12 +42,11 @@ class IqtestsController < ApplicationController
     redirect_to iqtests_path, status: :found
   end
 
-
-
   private
 
   def set_iqtest
     @iqtest = Iqtest.find(params[:id])
+    authorize @iqtest
   end
 
   def iqtest_params
