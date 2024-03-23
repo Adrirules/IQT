@@ -62,6 +62,6 @@ class OptionsController < ApplicationController
   end
 
   def option_params
-    params.require(:option).permit(:reponse, :isreponsecorrect)
+    params.require(:option).permit(:reponse, :isreponsecorrect, :image)
   end
 end

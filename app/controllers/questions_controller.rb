@@ -77,6 +77,6 @@ end
 
   def question_params
     #params.require(:question).permit(:contentq)
-    params.require(:question).permit(:contentq, options_attributes: [:reponse, :isreponsecorrect, :image, :_destroy, :id])
+    params.require(:question).permit(:contentq, :imageq, options_attributes: [:reponse, :isreponsecorrect, :image, :_destroy, :id])
   end
 end

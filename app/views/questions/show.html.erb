@@ -16,6 +16,9 @@
     <% @options.each do |option| %>
       <li>
         <%= option.reponse %> (Correct: <%= option.isreponsecorrect ? 'Yes' : 'No' %>)
+        <% if option.image.attached? %>
+          <%= cl_image_tag option.image.key, width: 100, height: 100, crop: :fill %>
+        <% end %>
         <% if policy(option).edit? %>
           <%= link_to 'Edit', edit_iqtest_question_option_path(@iqtest, @question, option) %>
         <% end %>

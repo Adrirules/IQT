@@ -1,5 +1,4 @@
-<!-- app/views/options/_form.html.erb -->
-<%= form_with(model: [@iqtest, @question, option], local: true) do |form| %>
+<%= form_with(model: [@iqtest, @question, option], local: true, multipart: true) do |form| %>
   <% if option.persisted? %>
     <%= form.hidden_field :id %>
   <% end %>
@@ -13,6 +12,11 @@
   <div class="field">
     <%= form.label :isreponsecorrect %>
     <%= form.check_box :isreponsecorrect %> <!-- Utilisez des cases à cocher -->
+  </div>
+
+  <div class="field">
+    <%= form.label :image %>
+    <%= form.file_field :image %> <!-- Utilisez un champ de fichier pour l'image -->
   </div>
 
   <%= form.submit option.persisted? ? "Update Option" : "Create Option" %>
