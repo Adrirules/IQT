@@ -1,37 +1,56 @@
-<!-- app/views/questions/show.html.erb -->
-<p><strong>IQTest:</strong> <%= @iqtest.name %></p>
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <p><strong>IQTest:</strong> <%= @iqtest.name %></p>
 
-<h1> <strong>Question:</strong>  <%= @question.contentq %></h1>
-<% if policy(@question).edit? %>
-  <%= link_to "Edit", edit_iqtest_question_path(@iqtest, @question) %> |
-<% end %>
+      <% if @question.imageq.attached? %>
+        <%= cl_image_tag @question.imageq.key, width: 300, height: 300, crop: :fill %>
+      <% end %>
 
-<% if policy(@question).destroy? %>
-  <%= button_to "Destroy", iqtest_question_path(@iqtest, @question),class: "btn btn-danger", method: :delete, data: { confirm: 'Are you sure?' } %>
-<% end %>
+      <% if user_signed_in? %> <!-- Ajout: Seulement si l'utilisateur est connecté -->
+        <h1> <strong>Question:</strong>  <%= @question.contentq %></h1>
 
-<% if @options.any? %>
-  <h2>Options:</h2>
-  <ul>
-    <% @options.each do |option| %>
-      <li>
-        <%= option.reponse %> (Correct: <%= option.isreponsecorrect ? 'Yes' : 'No' %>)
-        <% if option.image.attached? %>
-          <%= cl_image_tag option.image.key, width: 100, height: 100, crop: :fill %>
+        <% if policy(@question).edit? %>
+          <%= link_to "Edit", edit_iqtest_question_path(@iqtest, @question) %> |
         <% end %>
-        <% if policy(option).edit? %>
-          <%= link_to 'Edit', edit_iqtest_question_option_path(@iqtest, @question, option) %>
+
+        <% if policy(@question).destroy? %>
+          <%= button_to "Destroy", iqtest_question_path(@iqtest, @question), class: "btn btn-danger", method: :delete, data: { confirm: 'Are you sure?' } %>
         <% end %>
-        <% if policy(option).destroy? %>
-          <%= button_to 'Delete', iqtest_question_option_destroy_path(@iqtest, @question, option),class: "btn btn-danger", method: :delete, data: { confirm: 'Are you sure?' } %>
-        <% end %>
-      </li>
-    <% end %>
-  </ul>
-<% else %>
-  <p>Aucune option disponible pour cette question.</p>
-<% end %>
-<% if policy(@question).create_option? %>
-  <%= link_to 'Add Option', new_iqtest_question_option_path(@iqtest, @question) %>
-<% end %>
+      <% end %> <!-- Fin de l'ajout -->
+
+    </div>
+
+    <div class="col-md-6">
+      <% if @options.any? %>
+        <h2>Options:</h2>
+        <ul>
+          <% @options.each do |option| %>
+            <li>
+              <% if option.image.attached? %>
+                <%= cl_image_tag option.image.key, width: 100, height: 100, crop: :fill %>
+              <% end %>
+              <% if user_signed_in? %> <!-- Ajout: Seulement si l'utilisateur est connecté -->
+                <%= option.reponse %> (Correct: <%= option.isreponsecorrect ? 'Yes' : 'No' %>)
+                <% if policy(option).edit? %>
+                  <%= link_to 'Edit', edit_iqtest_question_option_path(@iqtest, @question, option) %>
+                <% end %>
+                <% if policy(option).destroy? %>
+                  <%= button_to 'Delete', iqtest_question_option_destroy_path(@iqtest, @question, option), class: "btn btn-danger", method: :delete, data: { confirm: 'Are you sure?' } %>
+                <% end %>
+              <% end %> <!-- Fin de l'ajout -->
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p>Aucune option disponible pour cette question.</p>
+      <% end %>
+
+      <% if policy(@question).create_option? && user_signed_in? %> <!-- Ajout: Seulement si l'utilisateur est connecté -->
+        <%= link_to 'Add Option', new_iqtest_question_option_path(@iqtest, @question) %>
+      <% end %> <!-- Fin de l'ajout -->
+    </div>
+  </div>
+</div>
+
 <%= link_to 'Back to IQTest', iqtest_path(@iqtest) %>

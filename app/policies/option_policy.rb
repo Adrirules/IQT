@@ -1,32 +1,27 @@
 class OptionPolicy < ApplicationPolicy
   class Scope < Scope
-    # NOTE: Be explicit about which records you allow access to!
     def resolve
       scope.all
-      #scope.where(user: user)
     end
   end
 
   def new
     create?
   end
+
   def create?
-    user_is_owner_of_question? || user.admin?
-    #record.question.iqtest.user == user || user.admin?
+    user.admin? # Seuls les administrateurs peuvent créer des options
   end
+
   def show?
-    true
+    true # Autoriser tout le monde à voir les options
   end
+
   def update?
-    record.question.iqtest.user == user || user.admin?
+    user&.admin? # Seuls les administrateurs peuvent mettre à jour des options
   end
+
   def destroy?
-    record.question.iqtest.user == user || user.admin?
-  end
-
-    private
-
-  def user_is_owner_of_question?
-    record.question&.iqtest&.user == user || user.admin?
+    user&.admin? # Seuls les administrateurs peuvent supprimer des options
   end
 end

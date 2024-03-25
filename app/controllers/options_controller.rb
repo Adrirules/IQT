@@ -1,4 +1,5 @@
 class OptionsController < ApplicationController
+  skip_before_action :authenticate_user!, only: [:show]
   before_action :set_question_and_iqtest
   before_action :set_question_and_option, only: [:show, :new, :create, :edit, :update, :destroy]
   before_action :authenticate_user!

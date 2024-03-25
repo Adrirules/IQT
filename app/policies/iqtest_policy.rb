@@ -1,22 +1,23 @@
 class IqtestPolicy < ApplicationPolicy
   class Scope < Scope
-    # NOTE: Be explicit about which records you allow access to!
     def resolve
       scope.all
-      #scope.where(user: user)
     end
   end
 
-  def create?
-    true
-  end
   def show?
-    true
+    true # Autoriser tout le monde à voir les IQTests
   end
+
+  def create?
+    user.admin? # Seuls les administrateurs peuvent créer de nouveaux IQTests
+  end
+
   def update?
-    record.user == user || user.admin?
+    user.admin? # Seuls les administrateurs peuvent mettre à jour les IQTests
   end
+
   def destroy?
-    record.user == user || user.admin?
+    user.admin? # Seuls les administrateurs peuvent supprimer les IQTests
   end
 end

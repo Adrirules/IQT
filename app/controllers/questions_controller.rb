@@ -1,5 +1,5 @@
 class QuestionsController < ApplicationController
-  before_action :authenticate_user!
+  skip_before_action :authenticate_user!, only: [:show]
   before_action :set_question, only: [:show, :edit, :update, :destroy]
   before_action :set_iqtest, only: [:show, :edit, :update, :destroy]
 
