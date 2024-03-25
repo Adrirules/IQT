@@ -5,5 +5,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
   # ... configurations de Devise ...
     has_many :iqtests, dependent: :destroy
+    has_many :user_test_scores, dependent: :destroy
+
 
 end

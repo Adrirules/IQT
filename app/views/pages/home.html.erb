@@ -2,7 +2,7 @@
   <div class="container">
     <h1>Test your IQ and get certified!</h1>
       <p>Discover your potential with our quick and certified IQ test. Receive your results and personalized evaluation in just 20 minutes.</p>
-    <a class="btn btn-flat" href="#">Start the test now!</a>
+      <%= link_to "Start the test now!", first_question_path, class: "btn btn-flat" %>
   </div>
 </div>
 <div class="">
@@ -16,13 +16,13 @@
     </div>
     <div class="col-md-6 .col-s-12 p-5">
       <p class="align-text-middle">Take a quick, certified IQ test and get your results instantly. Our test is designed to be accurate and reliable, providing you with a valuable assessment of your cognitive abilities</p>
-      <a class="btn btn-flat" href="#">Challenge Yourself!</a>
+      <%= link_to "Challenge Yourself!", first_question_path, class: "btn btn-flat" %>
     </div>
   </div>
   <div class="row align-items-center bg-white">
     <div class="col-md-6 .col-s-12 p-5">
       <p class="align-text-middle">Take a quick, certified IQ test and get your results instantly. Our test is designed to be accurate and reliable, providing you with a valuable assessment of your cognitive abilities.</p>
-      <a class="btn btn-flat" href="#">Start the test now!</a>
+      <%= link_to "Start the test now!", first_question_path, class: "btn btn-flat" %>
     </div>
     <div class="col-md-6 .col-s-12 align-items-center">
       <img src="https://th.bing.com/th/id/OIG2.9tsezNIxGAjhVcjORhY.?pid=ImgGn" class="rounded-3 img-fluid p-5" alt="brain and a scale">
@@ -33,10 +33,7 @@
       <p>
         Uncover your intellectual potential: Measure your cognitive abilities and explore the different facets of your intelligence to gain a deeper understanding of yourself. Challenge yourself and compare your results to the average population.
       </p>
-      <a class="btn btn-ghost" href="#">
-        Measure Your Intelligence!
-      </a>
-
+      <%= link_to "Measure Your Intelligence!", first_question_path, class: "btn btn-ghost" %>
     </div>
   </div>
   <div class="row align-items-center bg-light">
@@ -54,7 +51,7 @@
         <li>70-84 : Below average</li>
         <li>69 or below : Intellectual disability</li>
       </ul>
-      <a class="btn btn-flat" href="#">Discover your giftedness</a>
+      <%= link_to "Discover your giftedness", iqtest_question_path(Iqtest.first, Question.first) , class: "btn btn-flat" %>
     </div>
   </div>
 </div>

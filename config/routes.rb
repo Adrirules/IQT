@@ -17,6 +17,11 @@ Rails.application.routes.draw do
 # Ajoute une route pour la suppression d'une question
   delete 'iqtests/:iqtest_id/questions/:question_id', to: 'questions#destroy', as: 'iqtest_question_destroy'
 
+  # Ajoutez une route pour la prochaine question
+  get 'iqtests/:iqtest_id/questions/:id/next', to: 'questions#next_question', as: 'next_question'
+# Définition d'un chemin nommé pour accéder à la première question du premier IQTest
+  get 'first_question', to: 'questions#first_question'
+
   # Ajoute les routes pour le CRUD de la ressource IqTest
   resources :iqtests do
     resources :questions, only: [:new, :create,:show, :edit, :update] do

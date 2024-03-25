@@ -24,4 +24,8 @@ class QuestionPolicy < ApplicationPolicy
   def create_option?
     user&.admin? # Seuls les administrateurs peuvent créer des options pour les questions
   end
+
+  def first_question?
+    true
+  end
 end

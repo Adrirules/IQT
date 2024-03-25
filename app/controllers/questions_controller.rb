@@ -1,5 +1,5 @@
 class QuestionsController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:show]
+  skip_before_action :authenticate_user!, only: [:show, :first_question]
   before_action :set_question, only: [:show, :edit, :update, :destroy]
   before_action :set_iqtest, only: [:show, :edit, :update, :destroy]
 
@@ -57,6 +57,24 @@ class QuestionsController < ApplicationController
       redirect_to root_path, alert: 'Question not found.'
     end
       skip_authorization
+  end
+
+  def next_question
+    current_question = Question.find(params[:id])
+    next_question = current_question.next_question
+
+    redirect_to iqtest_question_path(params[:iqtest_id], next_question)
+  end
+
+  def first_question
+    authorize :question, :first_question?
+    first_iqtest = Iqtest.first
+    redirect_to iqtest_question_path(first_iqtest, first_iqtest.questions.first)
+  end
+
+  def first_question?
+    # Autoriser l'accès si l'utilisateur est connecté
+    user.present?
   end
 
   private

@@ -21,36 +21,55 @@
 
     </div>
 
-    <div class="col-md-6">
-      <% if @options.any? %>
+    <% if !current_user || !current_user.admin? %>
+      <div class="col-md-6">
         <h2>Options:</h2>
         <ul>
           <% @options.each do |option| %>
             <li>
               <% if option.image.attached? %>
-                <%= cl_image_tag option.image.key, width: 100, height: 100, crop: :fill %>
+                <%= link_to cl_image_tag(option.image.key, width: 100, height: 100, crop: :fill), next_question_path, class: 'option-link' %>
               <% end %>
-              <% if user_signed_in? %> <!-- Ajout: Seulement si l'utilisateur est connecté -->
-                <%= option.reponse %> (Correct: <%= option.isreponsecorrect ? 'Yes' : 'No' %>)
-                <% if policy(option).edit? %>
-                  <%= link_to 'Edit', edit_iqtest_question_option_path(@iqtest, @question, option) %>
-                <% end %>
-                <% if policy(option).destroy? %>
-                  <%= button_to 'Delete', iqtest_question_option_destroy_path(@iqtest, @question, option), class: "btn btn-danger", method: :delete, data: { confirm: 'Are you sure?' } %>
-                <% end %>
-              <% end %> <!-- Fin de l'ajout -->
             </li>
           <% end %>
         </ul>
-      <% else %>
-        <p>Aucune option disponible pour cette question.</p>
-      <% end %>
+      </div>
+    <% end %>
 
-      <% if policy(@question).create_option? && user_signed_in? %> <!-- Ajout: Seulement si l'utilisateur est connecté -->
-        <%= link_to 'Add Option', new_iqtest_question_option_path(@iqtest, @question) %>
-      <% end %> <!-- Fin de l'ajout -->
-    </div>
+    <% if current_user && current_user.admin? %>
+      <div class="col-md-6">
+        <h2>Options:</h2>
+        <ul>
+          <% @options.each do |option| %>
+            <li>
+              <% if option.image.attached? %>
+                <%= cl_image_tag(option.image.key, width: 100, height: 100, crop: :fill) %>
+              <% end %>
+              <%= option.reponse %> (Correct: <%= option.isreponsecorrect ? 'Yes' : 'No' %>)
+              <% if policy(option).edit? %>
+                <%= link_to 'Edit', edit_iqtest_question_option_path(@iqtest, @question, option) %>
+              <% end %>
+              <% if policy(option).destroy? %>
+                <%= button_to 'Delete', iqtest_question_option_destroy_path(@iqtest, @question, option), class: "btn btn-danger", method: :delete, data: { confirm: 'Are you sure?' } %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
   </div>
 </div>
 
 <%= link_to 'Back to IQTest', iqtest_path(@iqtest) %>
+
+<% if current_user && !current_user.admin? %>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.option-link').forEach(function(link) {
+        link.addEventListener('click', function() {
+          window.location.href = "<%= next_question_path %>";
+        });
+      });
+    });
+  </script>
+<% end %>

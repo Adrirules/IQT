@@ -5,5 +5,7 @@ class Iqtest < ApplicationRecord
 
   has_many  :questions, dependent: :destroy
   belongs_to :user
+  has_many :user_test_scores, dependent: :destroy
+
 
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_23_113337) do
+ActiveRecord::Schema[7.0].define(version: 2024_03_25_164915) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -70,6 +70,16 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_23_113337) do
     t.index ["iqtest_id"], name: "index_questions_on_iqtest_id"
   end
 
+  create_table "user_test_scores", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "iqtest_id", null: false
+    t.integer "score"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["iqtest_id"], name: "index_user_test_scores_on_iqtest_id"
+    t.index ["user_id"], name: "index_user_test_scores_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -88,4 +98,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_23_113337) do
   add_foreign_key "iqtests", "users"
   add_foreign_key "options", "questions"
   add_foreign_key "questions", "iqtests"
+  add_foreign_key "user_test_scores", "iqtests"
+  add_foreign_key "user_test_scores", "users"
 end
