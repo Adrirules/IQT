@@ -28,4 +28,8 @@ class QuestionPolicy < ApplicationPolicy
   def first_question?
     true
   end
+
+  def next_question?
+    true
+  end
 end

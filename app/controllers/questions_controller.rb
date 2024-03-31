@@ -1,5 +1,5 @@
 class QuestionsController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:show, :first_question]
+  skip_before_action :authenticate_user!, only: [:show, :first_question, :next_question, :show_score]
   before_action :set_question, only: [:show, :edit, :update, :destroy]
   before_action :set_iqtest, only: [:show, :edit, :update, :destroy]
 
@@ -56,15 +56,24 @@ class QuestionsController < ApplicationController
     else
       redirect_to root_path, alert: 'Question not found.'
     end
-      skip_authorization
+     # skip_authorization
   end
+
 
   def next_question
     current_question = Question.find(params[:id])
+    authorize current_question
+
     next_question = current_question.next_question
 
-    redirect_to iqtest_question_path(params[:iqtest_id], next_question)
+    if next_question.nil? # Si c'est la dernière question
+      redirect_to iqtest_question_show_score_path(params[:iqtest_id], current_question.iqtest.questions.last)
+    else
+      redirect_to iqtest_question_path(params[:iqtest_id], next_question)
+    end
   end
+
+
 
   def first_question
     authorize :question, :first_question?
@@ -72,10 +81,15 @@ class QuestionsController < ApplicationController
     redirect_to iqtest_question_path(first_iqtest, first_iqtest.questions.first)
   end
 
-  def first_question?
-    # Autoriser l'accès si l'utilisateur est connecté
-    user.present?
+  def show_score
+    @iqtest = Iqtest.find(params[:iqtest_id]) # Assurez-vous de récupérer correctement l'IQTest
+    selected_option_id = params[:selected_option_id] # Assurez-vous de récupérer l'ID de l'option sélectionnée depuis les paramètres de la requête
+    authorize @iqtest
+    @score = calculate_user_score(selected_option_id)
   end
+
+
+
 
   private
   def set_question
@@ -84,14 +98,47 @@ class QuestionsController < ApplicationController
   end
 
   def set_iqtest
-  if @question
-    @iqtest = @question.iqtest
-  else
+    if @question
+      @iqtest = @question.iqtest
+    else
     # Gérez le cas où la question n'est pas trouvée, peut-être redirigez l'utilisateur
     # vers une autre page ou affichez un message d'erreur.
+    end
   end
-end
 
+  def calculate_user_score(selected_option_id)
+    total_questions = @iqtest.questions.count
+    user_correct_answers = 0
+
+    @iqtest.questions.each do |question|
+      user_correct_answers += 1 if user_answer_correct?(question, selected_option_id)
+    end
+
+    calculate_score(total_questions, user_correct_answers)
+  end
+
+  def user_answer_correct?(question, selected_option_id)
+    # Logique pour vérifier si la réponse de l'utilisateur à une question est correcte
+    correct_options = question.options.where(isreponsecorrect: true)
+    user_option = question.options.find_by(id: selected_option_id)
+
+    return false unless user_option
+
+    user_option.isreponsecorrect? && correct_options.include?(user_option)
+  end
+
+  def calculate_score(total_questions, user_correct_answers)
+    score_chart = {
+      0 => 44, 1 => 50, 2 => 56, 3 => 62, 4 => 68,
+      5 => 74, 6 => 80, 7 => 86, 8 => 92, 9 => 98,
+      10 => 104, 11 => 110, 12 => 116, 13 => 122,
+      14 => 128, 15 => 135, 16 => 141, 17 => 148,
+      18 => 156, 19 => 165, 20 => 175
+    }
+
+    score = score_chart[user_correct_answers] || 0
+    score
+  end
 
   def question_params
     #params.require(:question).permit(:contentq)

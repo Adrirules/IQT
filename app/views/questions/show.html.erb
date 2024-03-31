@@ -28,7 +28,7 @@
           <% @options.each do |option| %>
             <li>
               <% if option.image.attached? %>
-                <%= link_to cl_image_tag(option.image.key, width: 100, height: 100, crop: :fill), next_question_path, class: 'option-link' %>
+                <%= link_to cl_image_tag(option.image.key, width: 100, height: 100, crop: :fill), next_question_path(question_id: @question.id, selected_option_id: option.id), class: 'option-link' %>
               <% end %>
             </li>
           <% end %>
@@ -60,6 +60,8 @@
   </div>
 </div>
 
+<%= debug(params) %>
+
 <%= link_to 'Back to IQTest', iqtest_path(@iqtest) %>
 
 <% if current_user && !current_user.admin? %>
@@ -67,9 +69,17 @@
     document.addEventListener('DOMContentLoaded', function() {
       document.querySelectorAll('.option-link').forEach(function(link) {
         link.addEventListener('click', function() {
-          window.location.href = "<%= next_question_path %>";
+          // Passer à la question suivante
+          window.location.href = this.href;
         });
       });
     });
   </script>
 <% end %>
+
+<!-- Pagination -->
+<div class="pagination">
+  <% @iqtest.questions.each_with_index do |question, index| %>
+    <%= link_to "Question #{index + 1}", iqtest_question_path(@iqtest, question) %>
+  <% end %>
+</div>

@@ -21,6 +21,8 @@ Rails.application.routes.draw do
   get 'iqtests/:iqtest_id/questions/:id/next', to: 'questions#next_question', as: 'next_question'
 # Définition d'un chemin nommé pour accéder à la première question du premier IQTest
   get 'first_question', to: 'questions#first_question'
+  # Ajoutez une route pour afficher le score
+  get 'iqtests/:iqtest_id/questions/:id/show_score', to: 'questions#show_score', as: 'iqtest_question_show_score'
 
   # Ajoute les routes pour le CRUD de la ressource IqTest
   resources :iqtests do

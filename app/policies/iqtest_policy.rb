@@ -20,4 +20,8 @@ class IqtestPolicy < ApplicationPolicy
   def destroy?
     user.admin? # Seuls les administrateurs peuvent supprimer les IQTests
   end
+
+  def show_score?
+    true
+  end
 end
