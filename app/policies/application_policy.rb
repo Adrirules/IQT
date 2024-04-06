@@ -36,6 +36,10 @@ class ApplicationPolicy
     false
   end
 
+  def collect_responses?
+    true
+  end
+
   class Scope
     def initialize(user, scope)
       @user = user

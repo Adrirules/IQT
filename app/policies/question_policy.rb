@@ -32,4 +32,8 @@ class QuestionPolicy < ApplicationPolicy
   def next_question?
     true
   end
+
+  def collect_responses?
+    true
+  end
 end

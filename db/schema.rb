@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_25_164915) do
+ActiveRecord::Schema[7.0].define(version: 2024_03_31_213637) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -40,6 +40,11 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_25_164915) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "guest_users", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "iqtests", force: :cascade do |t|
@@ -76,6 +81,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_25_164915) do
     t.integer "score"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "guest_user_id", null: false
+    t.index ["guest_user_id"], name: "index_user_test_scores_on_guest_user_id"
     t.index ["iqtest_id"], name: "index_user_test_scores_on_iqtest_id"
     t.index ["user_id"], name: "index_user_test_scores_on_user_id"
   end
@@ -98,6 +105,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_25_164915) do
   add_foreign_key "iqtests", "users"
   add_foreign_key "options", "questions"
   add_foreign_key "questions", "iqtests"
+  add_foreign_key "user_test_scores", "guest_users"
   add_foreign_key "user_test_scores", "iqtests"
   add_foreign_key "user_test_scores", "users"
 end

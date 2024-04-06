@@ -8,6 +8,10 @@ Rails.application.routes.draw do
   # Ajoute les routes pour les pages about et contact
   get "about", to: "pages#about"
   get "contact", to: "pages#contact"
+# Ajoutez une route pour la collecte des réponses
+  post '/collect_responses', to: 'user_test_scores#collect_responses', as: 'collect_responses'
+# Routes pour le CRUD de la ressource UserTestScore
+  resources :user_test_scores, only: [:create]
 
   # Définir la route pour les options
   get 'iqtests/:iqtest_id/questions/:question_id/options/new', to: 'options#new', as: 'iqtest_question_option_new'
@@ -30,6 +34,12 @@ Rails.application.routes.draw do
       resources :options, only: [:new, :create, :show, :edit, :update]
     end
   end
+  # Ajoute la route pour créer les scores des tests utilisateur
+  resources :user_test_scores, only: [:create]
 
+  # Ajoute la route pour supprimer une question
   resources :questions, only: [:destroy]
+
+   # Ajoute la route pour créer un utilisateur à partir d'un invité
+  resources :users, only: [:create]
 end

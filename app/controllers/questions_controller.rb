@@ -82,10 +82,44 @@ class QuestionsController < ApplicationController
   end
 
   def show_score
-    @iqtest = Iqtest.find(params[:iqtest_id]) # Assurez-vous de récupérer correctement l'IQTest
-    selected_option_id = params[:selected_option_id] # Assurez-vous de récupérer l'ID de l'option sélectionnée depuis les paramètres de la requête
+    @iqtest = Iqtest.find(params[:iqtest_id])
+    selected_option_ids = params.permit(:selected_option_id) # Récupère les paramètres de la requête
     authorize @iqtest
-    @score = calculate_user_score(selected_option_id)
+    # Vérifie si selected_option_ids est nil ou s'il contient les valeurs attendues
+    if selected_option_ids.present?
+      # Récupère toutes les questions associées à cet IQTest
+      questions = @iqtest.questions
+
+      # Initialise un compteur pour les réponses correctes de l'utilisateur
+      user_correct_answers = 0
+
+      # Parcourt chaque question pour vérifier si l'option sélectionnée par l'utilisateur est la réponse correcte
+      questions.each do |question|
+        # Obtient l'ID de l'option sélectionnée par l'utilisateur pour cette question
+        selected_option_id = selected_option_ids["question_#{question.id}_option_id"]
+
+        # Récupère l'option sélectionnée par l'utilisateur
+        selected_option = question.options.find_by(id: selected_option_id)
+
+        # Vérifie si l'option sélectionnée est correcte pour cette question
+        if selected_option && selected_option.isreponsecorrect?
+          user_correct_answers += 1
+        end
+      end
+
+      # Utilise le nombre de réponses correctes de l'utilisateur pour calculer le score
+      @score = calculate_score(questions.count, user_correct_answers)
+
+      # Affiche les informations de débogage
+      puts "Total questions: #{questions.count}"
+      puts "User correct answers: #{user_correct_answers}"
+      puts "Calculated score: #{@score}"
+
+      render 'show_score'
+    else
+      # Traitez le cas où selected_option_ids est nil ou vide
+      # Peut-être rediriger vers une autre page ou afficher un message d'erreur
+    end
   end
 
 
@@ -115,6 +149,12 @@ class QuestionsController < ApplicationController
     end
 
     calculate_score(total_questions, user_correct_answers)
+
+    # Point de contrôle : Afficher les informations pour déboguer le calcul du score utilisateur
+    puts "User correct answers: #{user_correct_answers}"
+    puts "Calculated score: #{calculated_score}"
+
+    calculated_score
   end
 
   def user_answer_correct?(question, selected_option_id)
@@ -141,7 +181,8 @@ class QuestionsController < ApplicationController
   end
 
   def question_params
-    #params.require(:question).permit(:contentq)
     params.require(:question).permit(:contentq, :imageq, options_attributes: [:reponse, :isreponsecorrect, :image, :_destroy, :id])
   end
+
+
 end

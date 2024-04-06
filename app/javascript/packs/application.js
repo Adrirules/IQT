@@ -3,9 +3,8 @@ require("@rails/ujs").start()
 require("turbolinks").start()
 require("@rails/activestorage").start()
 require("channels")
-
-// Ajoutez la ligne suivante pour inclure cocoon
 require("cocoon")
 
-import 'core-js/stable'
-import 'regenerator-runtime/runtime'
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
+import './ajax_setup.js';
