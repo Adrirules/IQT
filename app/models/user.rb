@@ -7,5 +7,6 @@ class User < ApplicationRecord
     has_many :iqtests, dependent: :destroy
     has_many :user_test_scores, dependent: :destroy
 
+  attribute :user_type, :string
 
 end

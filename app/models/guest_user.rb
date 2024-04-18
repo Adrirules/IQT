@@ -1,13 +1,21 @@
 class GuestUser < ApplicationRecord
-    has_many :user_test_scores, dependent: :destroy
+  has_many :user_test_scores, dependent: :destroy
+  has_many :responses, as: :responder, dependent: :destroy
+
+  def self.find_or_create_by_session(session_id)
+    find_or_create_by(session_id: session_id)
+  end
 
   def convert_to_user(user_params)
-    # Créer un nouvel utilisateur enregistré avec les paramètres fournis
-    new_user = User.create(user_params)
-    # Transférer les scores de l'utilisateur invité au nouvel utilisateur
-    self.user_test_scores.update_all(user_id: new_user.id)
-    # Détruire l'utilisateur invité
-    self.destroy
-    new_user # Retourner le nouvel utilisateur créé
+    ApplicationRecord.transaction do
+      new_user = User.create!(user_params)
+      self.user_test_scores.update_all(user_id: new_user.id)
+      self.responses.update_all(responder: new_user)
+      self.destroy
+      new_user
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    puts "Erreur de conversion: #{e.message}"
+    nil
   end
 end

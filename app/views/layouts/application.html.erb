@@ -6,14 +6,15 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= javascript_pack_tag 'application' %>
-
+    <!-- Si tu utilises preload, assure-toi d'ajouter `as` correctement -->
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload", as: "style" %>
+    <%= javascript_pack_tag 'application', 'data-turbo-track': 'reload', as: 'script' %>
   </head>
 
   <body>
     <%= render "shared/navbar" %>
     <%= render "shared/flashes" %>
+    <p class="notice"><%= notice %></p>
     <p class="alert"><%= alert %></p>
     <%= yield %>
   </body>

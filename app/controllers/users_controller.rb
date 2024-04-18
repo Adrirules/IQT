@@ -1,13 +1,21 @@
 class UsersController < ApplicationController
   def create
-    @guest_user = GuestUser.find(params[:guest_user_id])
-    @user = @guest_user.convert_to_user(user_params)
+    # Utilisez la session pour retrouver le GuestUser
+    session_id = session.id.to_s
+    @guest_user = GuestUser.find_by(session_id: session_id)
 
-    if @user.save
-      sign_in(@user) # Connectez automatiquement le nouvel utilisateur
-      redirect_to root_path, notice: 'Account created successfully!'
+    if @guest_user
+      @user = @guest_user.convert_to_user(user_params)
+
+      if @user.save
+        sign_in(@user) # Connectez automatiquement le nouvel utilisateur
+        redirect_to root_path, notice: 'Account created successfully!'
+      else
+        render :new
+      end
     else
-      render :new
+      # Gérer le cas où aucun GuestUser n'est trouvé
+      redirect_to new_user_registration_path, alert: "No guest user found."
     end
   end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_31_213637) do
+ActiveRecord::Schema[7.0].define(version: 2024_04_15_161445) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -45,6 +45,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_31_213637) do
   create_table "guest_users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "session_id"
+    t.string "unique_identifier"
+    t.index ["session_id"], name: "index_guest_users_on_session_id", unique: true
+    t.index ["unique_identifier"], name: "index_guest_users_on_unique_identifier", unique: true
   end
 
   create_table "iqtests", force: :cascade do |t|
@@ -75,16 +79,31 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_31_213637) do
     t.index ["iqtest_id"], name: "index_questions_on_iqtest_id"
   end
 
+  create_table "responses", force: :cascade do |t|
+    t.bigint "question_id", null: false
+    t.bigint "option_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "responder_type", null: false
+    t.bigint "responder_id", null: false
+    t.index ["option_id"], name: "index_responses_on_option_id"
+    t.index ["question_id"], name: "index_responses_on_question_id"
+    t.index ["responder_type", "responder_id"], name: "index_responses_on_responder"
+  end
+
   create_table "user_test_scores", force: :cascade do |t|
-    t.bigint "user_id", null: false
     t.bigint "iqtest_id", null: false
     t.integer "score"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "guest_user_id", null: false
-    t.index ["guest_user_id"], name: "index_user_test_scores_on_guest_user_id"
+    t.bigint "user_id"
+    t.string "user_type"
+    t.bigint "question_id", null: false
+    t.bigint "option_id", null: false
     t.index ["iqtest_id"], name: "index_user_test_scores_on_iqtest_id"
-    t.index ["user_id"], name: "index_user_test_scores_on_user_id"
+    t.index ["option_id"], name: "index_user_test_scores_on_option_id"
+    t.index ["question_id"], name: "index_user_test_scores_on_question_id"
+    t.index ["user_type", "user_id"], name: "index_user_test_scores_on_user_type_and_user_id", unique: true
   end
 
   create_table "users", force: :cascade do |t|
@@ -96,6 +115,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_31_213637) do
     t.string "first_name"
     t.string "last_name"
     t.boolean "admin", default: false, null: false
+    t.string "user_type"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -105,7 +125,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_31_213637) do
   add_foreign_key "iqtests", "users"
   add_foreign_key "options", "questions"
   add_foreign_key "questions", "iqtests"
-  add_foreign_key "user_test_scores", "guest_users"
+  add_foreign_key "responses", "options"
+  add_foreign_key "responses", "questions"
   add_foreign_key "user_test_scores", "iqtests"
-  add_foreign_key "user_test_scores", "users"
+  add_foreign_key "user_test_scores", "options"
+  add_foreign_key "user_test_scores", "questions"
 end

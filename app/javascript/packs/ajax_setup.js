@@ -19,3 +19,17 @@ Rails.ajax = (url, options) => {
     };
   });
 };
+
+// Votre script JavaScript pour envoyer la requête AJAX
+function envoyerRequeteAjax(url, data) {
+  Rails.ajax(url, {
+    type: 'POST', // Assurez-vous que la méthode est définie sur POST
+    data: data,
+  }).then(response => {
+    // Gérer la réponse ici
+    console.log(response);
+  }).catch(error => {
+    // Gérer les erreurs ici
+    console.error(error);
+  });
+}

@@ -36,4 +36,12 @@ class QuestionPolicy < ApplicationPolicy
   def collect_responses?
     true
   end
+
+  def select_option?
+    true
+  end
+
+  def start_test?
+    true
+  end
 end
