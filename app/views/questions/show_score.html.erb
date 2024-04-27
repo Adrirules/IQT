@@ -1,3 +1,45 @@
 <div class="container">
-  <h1>Your Score: <%= @score %> points</h1>
+  <h1>Your IQ Score is <%= @iq_score %></h1>
+  <h2>Correct Answers: <%= @score %> out of <%= @questions.count %></h2>
+
+  <!-- Container pour toutes les questions et options -->
+  <div class="review-container">
+
+    <!-- Conteneur pour les questions -->
+    <div class="question-container">
+      <% @questions.each_with_index do |question, index| %>
+        <div class="question-review">
+          <% if question.imageq.attached? %>
+            <%= image_tag question.imageq, class: "question-image" %>
+          <% else %>
+            <h3>Question <%= index + 1 %></h3>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Conteneur pour les options -->
+    <div class="options-container">
+      <% @questions.each do |question| %>
+        <ul>
+          <% question.options.each do |option| %>
+            <li class="<%= 'bg-success' if option.isreponsecorrect %><%= ' bg-danger' if @responses_map[question.id] == option.id && !option.isreponsecorrect %>">
+              <% if option.image.attached? %>
+                <%= image_tag option.image, class: "option-image" %>
+              <% else %>
+                <%= option.reponse %>
+              <% end %>
+              <% if option.id == @responses_map[question.id] %>
+                <span>(Your choice)</span>
+              <% end %>
+              <% if option.isreponsecorrect %>
+                <span>(Correct)</span>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
+
+  </div> <!-- Fin du conteneur de révision -->
 </div>

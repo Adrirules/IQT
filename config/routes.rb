@@ -33,7 +33,7 @@ Rails.application.routes.draw do
   match 'iqtests/:iqtest_id/questions/:id/next', to: 'questions#next_question', via: [:get, :post], as: 'next_question'
   # Définition d'un chemin nommé pour accéder à la première question du premier IQTest
   get 'first_question', to: 'questions#first_question'
-  # config/routes.rb
+
   get 'iqtests/:iqtest_id/:user_type/:user_id/show_score', to: 'questions#show_score', as: 'show_score'
 
   post 'start_test', to: 'questions#start_test', as: 'start_new_test'

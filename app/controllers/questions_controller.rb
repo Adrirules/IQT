@@ -24,10 +24,6 @@ class QuestionsController < ApplicationController
   end
 
   def show
-    #@iqtest = Iqtest.find(params[:iqtest_id])
-    # Vous pouvez également récupérer les options associées à la question si nécessaire
-    #@options = @question.options
-
     @iqtest = Iqtest.find(params[:iqtest_id])
     @question = Question.find(params[:id])
     authorize @question # Assurez-vous que la politique de la question est autorisée
@@ -60,6 +56,12 @@ class QuestionsController < ApplicationController
      # skip_authorization
   end
 
+  def first_question
+    authorize :question, :first_question?
+    first_iqtest = Iqtest.first
+    redirect_to iqtest_question_path(first_iqtest, first_iqtest.questions.first)
+  end
+
   def next_question
     current_iqtest = Iqtest.find(params[:iqtest_id])
     current_question = current_iqtest.questions.find(params[:id])
@@ -76,64 +78,39 @@ class QuestionsController < ApplicationController
     render json: { nextQuestionUrl: next_question_url }
   end
 
-
-
-
-  def first_question
-    authorize :question, :first_question?
-    first_iqtest = Iqtest.first
-    redirect_to iqtest_question_path(first_iqtest, first_iqtest.questions.first)
-  end
 =begin
   def show_score
-    puts "Entering show_score method..."
+    @user = params[:user_type].constantize.find(params[:user_id])
+    score_result = calculate_score(@user)
+
     @iqtest = Iqtest.find(params[:iqtest_id])
-    authorize @iqtest  # S'assurer que l'utilisateur est autorisé à voir le score pour cet IQTest
-
-    user_correct_answers = 0
-
-    puts "User responses for scoring: #{session[:user_responses].inspect}"
-
-    # Utilise session[:user_responses] pour récupérer les sélections de l'utilisateur
-    session[:user_responses]&.each do |question_id_str, response|
-      question_id = question_id_str.to_i  # Conversion de la clé en entier si nécessaire
-      puts "Processing response for question ID: #{question_id}"
-
-      question = Question.find_by(id: question_id)
-
-      if question
-        selected_option_id = response[:option_id].to_i  # S'assurer que l'option_id est un entier
-        selected_option = question.options.find_by(id: selected_option_id)
-
-        if selected_option&.isreponsecorrect?
-          user_correct_answers += 1
-          puts "Correct answer for question #{question_id}, option_id=#{selected_option_id}"
-        else
-          puts "Incorrect or missing option for question #{question_id}, selected_option_id=#{selected_option_id}"
-        end
-      else
-        puts "Question not found for ID: #{question_id}"
-      end
-    end
-
-    puts "Total correct answers: #{user_correct_answers}"
-    @score = calculate_score(@iqtest.questions.count, user_correct_answers)
-
-    # Assure-toi de nettoyer la session après utilisation
-    session.delete(:user_responses)
-    puts "Session cleaned. Remaining session data: #{session.inspect}"
-
-    render 'show_score'
+    score_data = calculate_score(@user)  # Ceci renvoie maintenant un hash avec :iq et :correct_answers
+    @score = score_data[:correct_answers]
+    @iq_score = score_data[:iq] # Récupère le score de QI du hash
+    authorize @iqtest, :show_score?
+    render :show_score
   end
 =end
 
-
   def show_score
-    @user = params[:user_type].constantize.find(params[:user_id])
+    @user = current_user || GuestUser.find_by(session_id: session.id.to_s)
+    return redirect_to root_path, alert: 'You are not authorized to view this page.' unless @user
+
     @iqtest = Iqtest.find(params[:iqtest_id])
-    @score = calculate_score(@user)  # Obtient le score calculé
-    authorize @iqtest, :show_score?  # Utilisez l'Iqtest pour l'autorisation
-    # Rend la vue qui affiche le score
+    score_data = calculate_score(@user)
+    @score = score_data[:correct_answers]
+    @iq_score = score_data[:iq]
+    authorize @iqtest, :show_score?
+
+    # Récupérer toutes les questions et réponses pour le test
+    @questions = @iqtest.questions.includes(:options)
+    @user_responses = @user.responses.where(question: @questions).includes(:option)
+
+    # Mapper les réponses pour accès facile dans la vue
+    @responses_map = @user_responses.each_with_object({}) do |response, map|
+      map[response.question_id] = response.option_id
+    end
+
     render :show_score
   end
 
@@ -144,14 +121,17 @@ class QuestionsController < ApplicationController
 
     option = question.options.find(params[:optionId])
     user = current_user || GuestUser.find_or_create_by(session_id: session.id.to_s)
-    response = Response.create(responder: user, question: question, option: option)
+
+    # Met à jour la réponse existante ou en crée une nouvelle
+    response = Response.find_or_initialize_by(responder: user, question: question)
+    response.option = option
+    response.save
 
     next_question = question.next_question
     if next_question
       render json: { success: true, nextQuestionUrl: iqtest_question_path(question.iqtest, next_question) }
     else
       # Redirection vers la méthode de calcul du score
-      score = calculate_score(user)
       redirect_url = show_score_path(iqtest_id: question.iqtest_id, user_type: user.class.name, user_id: user.id)
       render json: { success: true, redirect_url: redirect_url }
     end
@@ -160,7 +140,6 @@ class QuestionsController < ApplicationController
   rescue Pundit::NotAuthorizedError
     render json: { success: false, error: "Not authorized to perform this action" }, status: :forbidden
   end
-
 
 
   # Démarre un nouveau test et redirige vers la première question du test
@@ -179,15 +158,6 @@ class QuestionsController < ApplicationController
     redirect_to iqtest_question_path(first_iqtest, first_iqtest.questions.first)
   end
 
-
-
-
-
-
-
-
-
-
   private
   def set_question
     @question = Question.find_by(id: params[:id])
@@ -203,40 +173,9 @@ class QuestionsController < ApplicationController
     end
   end
 
-  def calculate_user_score(selected_option_id)
-    total_questions = @iqtest.questions.count
-    user_correct_answers = 0
-
-    @iqtest.questions.each do |question|
-      user_correct_answers += 1 if user_answer_correct?(question, selected_option_id)
-    end
-    score = calculate_score(total_questions, user_correct_answers) # Stockez la valeur de retour dans une variable
-
-    # Point de contrôle : Afficher les informations pour déboguer le calcul du score utilisateur
-    puts "User correct answers: #{user_correct_answers}"
-    puts "Calculated score: #{score}"
-
-    score
-  end
-  def user_answer_correct?(question, selected_option_id)
-    # Logique pour vérifier si la réponse de l'utilisateur à une question est correcte
-    correct_options = question.options.where(isreponsecorrect: true)
-    user_option = question.options.find_by(id: selected_option_id)
-
-    puts "Correct options: #{correct_options.pluck(:id)}"
-    puts "User option: #{user_option&.id}"
-
-    return false unless user_option
-
-    correct = user_option.isreponsecorrect? && correct_options.exists?(user_option.id)
-    puts "User answer correct? #{correct}"
-
-    correct
-  end
-
-=begin
-  def calculate_score(total_questions, user_correct_answers)
-    score_chart = {
+  def calculate_score(user)
+    # Tableau de correspondance des scores de QI
+    iq_scores = {
       0 => 44, 1 => 50, 2 => 56, 3 => 62, 4 => 68,
       5 => 74, 6 => 80, 7 => 86, 8 => 92, 9 => 98,
       10 => 104, 11 => 110, 12 => 116, 13 => 122,
@@ -244,17 +183,15 @@ class QuestionsController < ApplicationController
       18 => 156, 19 => 165, 20 => 175
     }
 
-    score = score_chart[user_correct_answers] || 0
-    score
+    # Calcule le nombre de réponses correctes
+    correct_answers_count = user.responses.joins(:option).where(options: { isreponsecorrect: true }).count
+
+    # Obtient le score de QI basé sur le nombre de réponses correctes
+    iq_score = iq_scores[correct_answers_count] || 44 # Default à 44 si le score n'est pas défini (pour les cas où le nombre de réponses correctes pourrait dépasser 20)
+
+    # Renvoie le score de QI et le nombre de réponses correctes
+    { iq: iq_score, correct_answers: correct_answers_count }
   end
-=end
-  def calculate_score(user)
-    correct_answers = user.responses.joins(:option).where(options: { isreponsecorrect: true }).count
-    correct_answers  # Retourne simplement le nombre de réponses correctes
-  end
-
-
-
 
   def question_option_params
     # Construisez une liste des clés attendues en fonction des questions associées à cet IQTest
@@ -266,6 +203,7 @@ class QuestionsController < ApplicationController
   def question_params
     params.require(:question).permit(:contentq, :imageq, options_attributes: [:reponse, :isreponsecorrect, :image, :_destroy, :id])
   end
+
 
 
 end

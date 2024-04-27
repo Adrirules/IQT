@@ -44,4 +44,10 @@ class QuestionPolicy < ApplicationPolicy
   def start_test?
     true
   end
+
+  def show_result?
+    # Assure que l'utilisateur courant est celui qui a répondu à la question ou un administrateur
+    user.admin? || record.iqtest.users.include?(user)
+  end
+
 end
