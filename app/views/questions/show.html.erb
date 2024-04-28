@@ -1,20 +1,23 @@
 <div class="container">
-  <style>.option-item {cursor: pointer;}</style>
+  <p><strong>IQTest:</strong> <%= @iqtest.name %></p> <div id="timer"></div>
+  <input type="hidden" id="start-time" value="<%= @iqtest.start_time.iso8601 %>">
+
   <div class="row">
     <div class="col-md-6">
-      <p><strong>IQTest:</strong> <%= @iqtest.name %></p>
+      <div class="question-card">
+        <!-- Conteneur du texte de la question -->
+        <div id="question-text-container">
+          <h1 id="question-text"><strong>Question:</strong> <%= @question.contentq %></h1>
+        </div>
 
-      <!-- Conteneur de l'image de la question -->
-      <div id="question-image-container">
-        <% if @question.imageq.attached? %>
-          <%= cl_image_tag @question.imageq.key, id: "question-image", width: 300, height: 300, crop: :fill %>
-        <% end %>
+        <!-- Conteneur de l'image de la question -->
+        <div id="question-image-container">
+          <% if @question.imageq.attached? %>
+            <%= cl_image_tag @question.imageq.key, id: "question-image", class: "img-fluid", alt: "Image de la question" %>
+          <% end %>
+        </div>
       </div>
 
-      <!-- Conteneur du texte de la question -->
-      <div id="question-text-container">
-        <h1 id="question-text"><strong>Question:</strong> <%= @question.contentq %></h1>
-      </div>
 
       <!-- Options pour la gestion de la question (pour les admins) -->
       <% if user_signed_in? && policy(@question).edit? %>
@@ -25,12 +28,12 @@
 
     <!-- Conteneur des options -->
     <div class="col-md-6" id="options-container">
-      <h2>Options:</h2>
-      <ul>
+      <div class="options-card">
         <% @options.each do |option| %>
-          <li class="<%= 'option-item' unless current_user&.admin? %>" data-option-id="<%= option.id %>" data-question-id="<%= @question.id %>" data-iqtest-id="<%= @iqtest.id %>">
+          <div class="<%= 'option-item' unless current_user&.admin? %>" data-option-id="<%= option.id %>" data-question-id="<%= @question.id %>" data-iqtest-id="<%= @iqtest.id %>">
+            <p><%= option.reponse %></p>
             <% if option.image.attached? %>
-              <%= cl_image_tag option.image.key, width: 100, height: 100, crop: :fill %>
+              <%= cl_image_tag option.image.key, class: "img-fluid", alt: "Image de l'option" %>
             <% end %>
             <% if current_user&.admin? %>
               <%= option.reponse %> (Correct: <%= option.isreponsecorrect ? 'Yes' : 'No' %>)
@@ -41,12 +44,14 @@
                 <%= button_to 'Delete', iqtest_question_option_destroy_path(@iqtest, @question, option), method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-sm btn-danger" %>
               <% end %>
             <% end %>
-          </li>
+          </div>
         <% end %>
-      </ul>
+      </div>
     </div>
   </div>
 </div>
+
+
 
 <%= link_to 'Back to IQTest', iqtest_path(@iqtest), class: "btn btn-secondary" %>
 
@@ -56,3 +61,5 @@
     <%= link_to "Question #{index + 1}", iqtest_question_path(@iqtest, question), class: "page-link" %>
   <% end %>
 </div>
+
+

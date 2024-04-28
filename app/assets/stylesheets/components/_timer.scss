@@ -1,0 +1,12 @@
+#timer {
+  font-size: 1.2em;
+  color: #333;
+  text-align: center;
+  margin-top: -21px;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+    /* Compenser la taille propre de la div pour un centrage parfait */
+  background-color: white;
+  padding: 10px;
+}

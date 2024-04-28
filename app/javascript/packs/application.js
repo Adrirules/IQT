@@ -9,6 +9,7 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 
 import './question_handling';
+import './timer';
 
 
 Rails.start();

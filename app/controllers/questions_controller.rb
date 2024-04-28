@@ -27,7 +27,7 @@ class QuestionsController < ApplicationController
     @iqtest = Iqtest.find(params[:iqtest_id])
     @question = Question.find(params[:id])
     authorize @question # Assurez-vous que la politique de la question est autorisée
-    @options = @question.options
+    @options = @question.options.sort_by { |option| option.reponse.downcase }
     # Variable pour déterminer si l'utilisateur peut créer une option
     @options_creatable = policy(@question).create_option?
   end
@@ -153,6 +153,10 @@ class QuestionsController < ApplicationController
     # S'assure que la politique d'autorisation est respectée pour accéder à la première question
     authorize :question, :first_question?
     first_iqtest = Iqtest.first
+
+    # Initialiser le temps de début du test
+    first_iqtest.start_time = Time.current
+    first_iqtest.save
 
     # Rediriger vers la première question du premier test IQ
     redirect_to iqtest_question_path(first_iqtest, first_iqtest.questions.first)

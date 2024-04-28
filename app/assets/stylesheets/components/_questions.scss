@@ -1,0 +1,59 @@
+.question-card {
+  background-color: $bg-color;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 20px 10%;
+
+  .question-image-container img {
+    width: 100%;
+    border-radius: $border-radius;
+  }
+
+  .question-text-container {
+    h1 {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+.options-card {
+  display: flex;        /* Active Flexbox pour ce conteneur */
+  flex-wrap: wrap;      /* Permet aux éléments de passer à la ligne suivante si nécessaire */
+  justify-content: space-around; /* Répartit l'espace autour de chaque élément pour un espacement égal */
+  background-color: $bg-color;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 20px 0px;
+  .option-item {
+    width: 29%;
+    /* Définit une largeur pour chaque élément pour garantir que trois tiennent dans une ligne */
+    text-align: center;
+    /* Centre le texte dans chaque élément */
+    padding: 10px;
+    /* Ajoute un peu de padding pour visualisation */
+    box-sizing: border-box;
+    /* S'assure que le padding et la bordure sont inclus dans la largeur définie */
+    margin: 10px;
+
+    background-color: $bg-color;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+    &:hover {
+      background-color: $bg-hover-color;
+      cursor: pointer;
+    }
+  }
+}
+
+
+.pagination-container .page-link {
+  background-color: $bg-color;
+  border-radius: $border-radius;
+  margin-right: 5px;
+
+  &.answered {
+    background-color: darken($bg-color, 10%); // Assombrir la couleur pour les questions répondues
+  }
+}
