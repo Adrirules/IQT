@@ -14,7 +14,8 @@ document.addEventListener('turbolinks:load', function () {
     if (distance < 0) {
       clearInterval(timer);
       document.getElementById('timer').textContent = "EXPIRÉ";
-      window.location.href = '<%= show_score_path(@iqtest, current_user) %>'; // Redirige vers la page des scores
+      let scoreUrl = document.getElementById('timer').getAttribute('data-score-url');
+      window.location.href = scoreUrl; // Utilise l'URL depuis l'attribut data-score-url
     }
   }, 1000);
 });

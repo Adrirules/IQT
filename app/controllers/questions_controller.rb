@@ -96,11 +96,13 @@ class QuestionsController < ApplicationController
     @user = current_user || GuestUser.find_by(session_id: session.id.to_s)
     return redirect_to root_path, alert: 'You are not authorized to view this page.' unless @user
 
+
     @iqtest = Iqtest.find(params[:iqtest_id])
+    authorize @iqtest, :show_score?
+
     score_data = calculate_score(@user)
     @score = score_data[:correct_answers]
     @iq_score = score_data[:iq]
-    authorize @iqtest, :show_score?
 
     # Récupérer toutes les questions et réponses pour le test
     @questions = @iqtest.questions.includes(:options)

@@ -1,12 +1,34 @@
 .navbar-lewagon {
+  display: flex;
   justify-content: space-between;
+  align-items: center;
   background: white;
 }
 
-.navbar-lewagon .navbar-collapse {
-  flex-grow: 0;
+.navbar-lewagon .container-fluid {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.navbar-lewagon .navbar-part.left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-lewagon .navbar-part.right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
 
 .navbar-lewagon .navbar-brand img {
-  width: 40px;
+  width: 60px;
+}
+
+.nav-link {
+  padding: 0.5rem 1rem;
+  /* Ajuste ces valeurs selon tes besoins pour les liens */
 }

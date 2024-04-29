@@ -1,45 +1,43 @@
-<div class="container">
+<div class="container-question">
   <h1>Your IQ Score is <%= @iq_score %></h1>
   <h2>Correct Answers: <%= @score %> out of <%= @questions.count %></h2>
 
-  <!-- Container pour toutes les questions et options -->
-  <div class="review-container">
-
-    <!-- Conteneur pour les questions -->
-    <div class="question-container">
+  <div class="row">
+    <!-- Section pour les questions -->
+    <div class="col-md-6">
       <% @questions.each_with_index do |question, index| %>
-        <div class="question-review">
+        <div class="question-card">
           <% if question.imageq.attached? %>
-            <%= image_tag question.imageq, class: "question-image" %>
+            <%= image_tag question.imageq, class: "img-fluid", alt: "Image de la question" %>
           <% else %>
-            <h3>Question <%= index + 1 %></h3>
+            <div id="question-text-container">
+              <h3>Question <%= index + 1 %></h3>
+            </div>
           <% end %>
         </div>
       <% end %>
     </div>
 
-    <!-- Conteneur pour les options -->
-    <div class="options-container">
-      <% @questions.each do |question| %>
-        <ul>
+    <!-- Section pour les options -->
+    <div class="col-md-6" id="options-container">
+      <div class="options-card">
+        <% @questions.each do |question| %>
           <% question.options.each do |option| %>
-            <li class="<%= 'bg-success' if option.isreponsecorrect %><%= ' bg-danger' if @responses_map[question.id] == option.id && !option.isreponsecorrect %>">
+            <div class="<%= 'option-item' unless current_user&.admin? %><%= ' bg-success' if option.isreponsecorrect %><%= ' bg-danger' if @responses_map[question.id] == option.id && !option.isreponsecorrect %>">
               <% if option.image.attached? %>
-                <%= image_tag option.image, class: "option-image" %>
-              <% else %>
-                <%= option.reponse %>
+                <%= image_tag option.image, class: "img-fluid", alt: "Image de l'option" %>
               <% end %>
+              <p><%= option.reponse %></p>
               <% if option.id == @responses_map[question.id] %>
                 <span>(Your choice)</span>
               <% end %>
               <% if option.isreponsecorrect %>
                 <span>(Correct)</span>
               <% end %>
-            </li>
+            </div>
           <% end %>
-        </ul>
-      <% end %>
+        <% end %>
+      </div>
     </div>
-
-  </div> <!-- Fin du conteneur de révision -->
+  </div>
 </div>

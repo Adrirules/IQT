@@ -1,6 +1,13 @@
-<div class="container">
-  <p><strong>IQTest:</strong> <%= @iqtest.name %></p> <div id="timer"></div>
-  <input type="hidden" id="start-time" value="<%= @iqtest.start_time.iso8601 %>">
+<div class="container-question">
+  <p><strong>IQTest:</strong> <%= @iqtest.name %></p>
+
+    <%# if user_signed_in? %>
+      <div id="timer" data-score-url="<%#= show_score_path(iqtest_id: @iqtest.id, user_type: current_user.class.name.downcase, user_id: current_user.id) %>"></div>
+      <%# else %>
+        <!-- Gère le cas des utilisateurs invités -->
+        <div id="timer" data-score-url="<%#= show_score_path(iqtest_id: @iqtest.id, user_type: 'guest', user_id: 'guest') %>"></div>
+    <%# end %>
+    <input type="hidden" id="start-time" value="<%#= @iqtest.start_time.iso8601 %>">
 
   <div class="row">
     <div class="col-md-6">
