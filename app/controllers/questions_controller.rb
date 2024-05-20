@@ -105,7 +105,9 @@ class QuestionsController < ApplicationController
     @iq_score = score_data[:iq]
 
     # Récupérer toutes les questions et réponses pour le test
-    @questions = @iqtest.questions.includes(:options)
+    @questions = @iqtest.questions.includes(:options).each do |question|
+      question.options = question.options.sort_by { |option| option.reponse.downcase }
+    end
     @user_responses = @user.responses.where(question: @questions).includes(:option)
 
     # Mapper les réponses pour accès facile dans la vue

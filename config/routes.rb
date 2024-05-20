@@ -11,6 +11,9 @@ Rails.application.routes.draw do
   # Ajoute les routes pour les pages about et contact
   get "about", to: "pages#about"
   get "contact", to: "pages#contact"
+  get "terms", to: "pages#terms"
+  get "privacy", to: "pages#privacy"
+  get "mentions", to: "pages#mentions"
 
   post '/process_option_selection', to: 'questions#process_option_selection', as: 'process_option_selection'
 

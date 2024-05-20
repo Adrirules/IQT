@@ -2,12 +2,15 @@
   <h1>Your IQ Score is <%= @iq_score %></h1>
   <h2>Correct Answers: <%= @score %> out of <%= @questions.count %></h2>
 
-  <div class="row">
-    <!-- Section pour les questions -->
-    <div class="col-md-6">
-      <% @questions.each_with_index do |question, index| %>
+  <% @questions.each_with_index do |question, index| %>
+    <div class="row"> <!-- Chaque ligne contient une question et ses options -->
+      <!-- Section pour la question -->
+      <div class="col-md-6">
         <div class="question-card">
           <% if question.imageq.attached? %>
+            <div id="question-text-container">
+              <h3>Question <%= index + 1 %> :</h3>
+            </div>
             <%= image_tag question.imageq, class: "img-fluid", alt: "Image de la question" %>
           <% else %>
             <div id="question-text-container">
@@ -15,15 +18,13 @@
             </div>
           <% end %>
         </div>
-      <% end %>
-    </div>
+      </div>
 
-    <!-- Section pour les options -->
-    <div class="col-md-6" id="options-container">
-      <div class="options-card">
-        <% @questions.each do |question| %>
+      <!-- Section pour les options de cette question spécifique -->
+      <div class="col-md-6">
+        <div class="options-card">
           <% question.options.each do |option| %>
-            <div class="<%= 'option-item' unless current_user&.admin? %><%= ' bg-success' if option.isreponsecorrect %><%= ' bg-danger' if @responses_map[question.id] == option.id && !option.isreponsecorrect %>">
+            <div class="<%= 'option-item ' unless current_user&.admin? %><%= 'bg-success' if option.isreponsecorrect %><%= 'bg-danger' if @responses_map[question.id] == option.id && !option.isreponsecorrect %>">
               <% if option.image.attached? %>
                 <%= image_tag option.image, class: "img-fluid", alt: "Image de l'option" %>
               <% end %>
@@ -36,8 +37,8 @@
               <% end %>
             </div>
           <% end %>
-        <% end %>
+        </div>
       </div>
-    </div>
-  </div>
+    </div> <!-- Fin de la ligne pour une question et ses options -->
+  <% end %>
 </div>
