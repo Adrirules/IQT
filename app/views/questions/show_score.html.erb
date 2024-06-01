@@ -41,4 +41,7 @@
       </div>
     </div> <!-- Fin de la ligne pour une question et ses options -->
   <% end %>
+  <% if @order && @order.state != 'paid' %>
+    <%= link_to 'Complete Payment', new_payment_path(order_id: @order.id), class: 'btn btn-primary' %>
+  <% end %>
 </div>

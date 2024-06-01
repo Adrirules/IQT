@@ -50,7 +50,7 @@ class IqtestsController < ApplicationController
   end
 
   def iqtest_params
-    params.require(:iqtest).permit(:name, :description)
+    params.require(:iqtest).permit(:name, :description, :price, :currency)
   end
 
 end

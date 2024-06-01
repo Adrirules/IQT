@@ -3,6 +3,7 @@ class QuestionsController < ApplicationController
   before_action :set_question, only: [:show, :edit, :update, :destroy]
   before_action :set_iqtest, only: [:show, :edit, :update, :destroy]
   skip_before_action :verify_authenticity_token
+  before_action :hide_navbar_and_footer, only: [:show]
 
   def new
     @iqtest = Iqtest.find(params[:iqtest_id])
@@ -91,26 +92,28 @@ class QuestionsController < ApplicationController
     render :show_score
   end
 =end
-
   def show_score
     @user = current_user || GuestUser.find_by(session_id: session.id.to_s)
     return redirect_to root_path, alert: 'You are not authorized to view this page.' unless @user
 
-
     @iqtest = Iqtest.find(params[:iqtest_id])
     authorize @iqtest, :show_score?
+
+    @order = Order.find_or_create_order(@iqtest, @user)
+
+    unless @order.state == 'paid'
+      return redirect_to new_order_payment_path(order_id: @order.id), alert: 'You must complete the payment to view your score.'
+    end
 
     score_data = calculate_score(@user)
     @score = score_data[:correct_answers]
     @iq_score = score_data[:iq]
 
-    # Récupérer toutes les questions et réponses pour le test
     @questions = @iqtest.questions.includes(:options).each do |question|
       question.options = question.options.sort_by { |option| option.reponse.downcase }
     end
     @user_responses = @user.responses.where(question: @questions).includes(:option)
 
-    # Mapper les réponses pour accès facile dans la vue
     @responses_map = @user_responses.each_with_object({}) do |response, map|
       map[response.question_id] = response.option_id
     end
@@ -119,31 +122,36 @@ class QuestionsController < ApplicationController
   end
 
 
+
   def process_option_selection
-    question = Question.find(params[:questionId])
+    question = Question.find(params[:question_id])
     authorize question, :select_option?
 
-    option = question.options.find(params[:optionId])
+    option = question.options.find(params[:option_id])
     user = current_user || GuestUser.find_or_create_by(session_id: session.id.to_s)
 
-    # Met à jour la réponse existante ou en crée une nouvelle
     response = Response.find_or_initialize_by(responder: user, question: question)
     response.option = option
     response.save
 
     next_question = question.next_question
-    if next_question
-      render json: { success: true, nextQuestionUrl: iqtest_question_path(question.iqtest, next_question) }
-    else
-      # Redirection vers la méthode de calcul du score
-      redirect_url = show_score_path(iqtest_id: question.iqtest_id, user_type: user.class.name, user_id: user.id)
-      render json: { success: true, redirect_url: redirect_url }
-    end
-  rescue ActiveRecord::RecordNotFound
-    render json: { success: false, error: "Question or option not found" }, status: :not_found
-  rescue Pundit::NotAuthorizedError
-    render json: { success: false, error: "Not authorized to perform this action" }, status: :forbidden
+      if next_question
+        render json: { success: true, nextQuestionUrl: iqtest_question_path(question.iqtest, next_question) }
+      else
+        order = Order.find_or_create_by(iqtest: question.iqtest, responder: user) do |new_order|
+          new_order.amount_cents = question.iqtest.price_cents
+          new_order.state = 'pending'
+        end
+        authorize order, :new?
+        redirect_url = new_order_payment_path(order)
+        render json: { success: true, redirect_url: redirect_url }
+      end
+    rescue ActiveRecord::RecordNotFound
+      render json: { success: false, error: "Question or option not found" }, status: :not_found
+    rescue Pundit::NotAuthorizedError
+      render json: { success: false, error: "Not authorized to perform this action" }, status: :forbidden
   end
+
 
 
   # Démarre un nouveau test et redirige vers la première question du test
@@ -164,6 +172,10 @@ class QuestionsController < ApplicationController
 
     # Rediriger vers la première question du premier test IQ
     redirect_to iqtest_question_path(first_iqtest, first_iqtest.questions.first)
+  end
+
+  def hide_navbar_and_footer
+    @hide_navbar_and_footer = true
   end
 
   private
@@ -211,7 +223,4 @@ class QuestionsController < ApplicationController
   def question_params
     params.require(:question).permit(:contentq, :imageq, options_attributes: [:reponse, :isreponsecorrect, :image, :_destroy, :id])
   end
-
-
-
 end

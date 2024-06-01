@@ -3,7 +3,11 @@ Rails.application.routes.draw do
   mount ActionCable.server => '/cable'
 
   # Utilise devise_for pour générer les routes de devise pour les utilisateurs
-  devise_for :users
+  devise_for :users, controllers: {
+    registrations: 'users/registrations'
+  }
+
+  mount StripeEvent::Engine, at: '/stripe-webhooks'
 
   # Définit la route racine ("/") vers le contrôleur pages#home
   root to: "pages#home"
@@ -23,6 +27,12 @@ Rails.application.routes.draw do
   post '/collect_responses', to: 'user_test_scores#collect_responses', as: 'collect_responses'
   # Routes pour le CRUD de la ressource UserTestScore
   resources :user_test_scores, only: [:create]
+
+  resources :orders, only: [:create, :show] do
+    resources :payments, only: [:new, :create]
+  end
+
+
 
   # Définir la route pour les options
   get 'iqtests/:iqtest_id/questions/:question_id/options/new', to: 'options#new', as: 'iqtest_question_option_new'

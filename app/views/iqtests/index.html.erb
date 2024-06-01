@@ -15,6 +15,8 @@
       <tr>
         <td><%= iqtest.name %></td>
         <td><%= iqtest.description %></td>
+        <td>Amount: <%= humanized_money_with_symbol(iqtest.price) %></td>
+
         <td><%= link_to 'Show', iqtest_path(iqtest) %></td>
         <% if policy(iqtest).edit? %>
           <td><%= link_to 'Edit', edit_iqtest_path(iqtest) %></td>

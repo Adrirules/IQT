@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_04_27_100450) do
+ActiveRecord::Schema[7.0].define(version: 2024_05_29_140209) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -58,6 +58,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_27_100450) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.datetime "start_time"
+    t.integer "price_cents", default: 0, null: false
+    t.integer "sku"
     t.index ["user_id"], name: "index_iqtests_on_user_id"
   end
 
@@ -69,6 +71,19 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_27_100450) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["question_id"], name: "index_options_on_question_id"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.string "state"
+    t.string "iqtest_sku"
+    t.integer "amount_cents"
+    t.string "checkout_session_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "iqtest_id"
+    t.string "responder_type"
+    t.bigint "responder_id"
+    t.index ["responder_type", "responder_id"], name: "index_orders_on_responder"
   end
 
   create_table "questions", force: :cascade do |t|

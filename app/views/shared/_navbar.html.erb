@@ -9,15 +9,18 @@
 
     <!-- Liens à droite -->
     <div class="navbar-part right">
-      <div class="button-signup">
-        <%= link_to "Sign up", new_user_registration_path, class: "nav-link" %>
-      </div>
+      <% if user_signed_in? %>
+        <div class="button-logout">
+          <%= link_to "Logout", destroy_user_session_path, method: :delete, class: "nav-link" %>
+        </div>
+      <% else %>
+        <div class="button-signup">
+          <%= link_to "Sign up", new_user_registration_path, class: "nav-link" %>
+        </div>
+      <% end %>
       <div class="button-newtest">
         <%= link_to "New Test", first_question_path, class: "nav-link" %>
       </div>
     </div>
   </div>
 </div>
-
-
-

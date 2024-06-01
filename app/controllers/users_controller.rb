@@ -1,20 +1,22 @@
 class UsersController < ApplicationController
   def create
-    # Utilisez la session pour retrouver le GuestUser
     session_id = session.id.to_s
     @guest_user = GuestUser.find_by(session_id: session_id)
 
     if @guest_user
       @user = @guest_user.convert_to_user(user_params)
 
-      if @user.save
-        sign_in(@user) # Connectez automatiquement le nouvel utilisateur
-        redirect_to root_path, notice: 'Account created successfully!'
+      if @user.persisted?
+        sign_in(@user)
+
+        @iqtest = Iqtest.find(session[:iqtest_id])
+        @order = Order.find_or_create_order(@iqtest, @user)
+
+        redirect_to new_order_payment_path(@order), notice: 'Account created successfully! Please complete the payment to view your IQ test results.'
       else
         render :new
       end
     else
-      # Gérer le cas où aucun GuestUser n'est trouvé
       redirect_to new_user_registration_path, alert: "No guest user found."
     end
   end
@@ -22,7 +24,6 @@ class UsersController < ApplicationController
   private
 
   def user_params
-    # Définissez ici les paramètres autorisés pour la création d'un utilisateur
     params.require(:user).permit(:email, :password, :password_confirmation)
   end
 end

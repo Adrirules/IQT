@@ -6,6 +6,8 @@ class Iqtest < ApplicationRecord
   has_many  :questions, dependent: :destroy
   belongs_to :user
   has_many :user_test_scores, dependent: :destroy
+  monetize :price_cents
+  has_many :orders, dependent: :destroy
 
 
 end
