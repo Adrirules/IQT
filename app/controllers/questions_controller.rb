@@ -79,19 +79,6 @@ class QuestionsController < ApplicationController
     render json: { nextQuestionUrl: next_question_url }
   end
 
-=begin
-  def show_score
-    @user = params[:user_type].constantize.find(params[:user_id])
-    score_result = calculate_score(@user)
-
-    @iqtest = Iqtest.find(params[:iqtest_id])
-    score_data = calculate_score(@user)  # Ceci renvoie maintenant un hash avec :iq et :correct_answers
-    @score = score_data[:correct_answers]
-    @iq_score = score_data[:iq] # Récupère le score de QI du hash
-    authorize @iqtest, :show_score?
-    render :show_score
-  end
-=end
   def show_score
     @user = current_user || GuestUser.find_by(session_id: session.id.to_s)
     return redirect_to root_path, alert: 'You are not authorized to view this page.' unless @user
@@ -121,9 +108,8 @@ class QuestionsController < ApplicationController
     render :show_score
   end
 
-
-
   def process_option_selection
+    Rails.logger.info "Processing option selection: params = #{params.inspect}"
     question = Question.find(params[:question_id])
     authorize question, :select_option?
 
@@ -134,25 +120,34 @@ class QuestionsController < ApplicationController
     response.option = option
     response.save
 
+    Rails.logger.info "User #{user.id} selected option #{option.id} for question #{question.id}"
+
     next_question = question.next_question
-      if next_question
-        render json: { success: true, nextQuestionUrl: iqtest_question_path(question.iqtest, next_question) }
+    if next_question
+      render json: { success: true, nextQuestionUrl: iqtest_question_path(question.iqtest, next_question) }
+    else
+      order = Order.find_or_create_by(iqtest: question.iqtest, responder: user, state: 'pending')
+      order.update(amount_cents: question.iqtest.price_cents)
+      Rails.logger.info "Order #{order.id} created or found for user #{user.id} with state #{order.state}"
+
+      unless user_signed_in?
+        session[:guest_user_id] = user.id
+        session[:redirect_to_after_signup] = new_order_payment_path(order)
+        Rails.logger.info "Redirecting guest user #{user.id} to sign up"
+        render json: { success: true, redirect_url: new_user_registration_path }
       else
-        order = Order.find_or_create_by(iqtest: question.iqtest, responder: user) do |new_order|
-          new_order.amount_cents = question.iqtest.price_cents
-          new_order.state = 'pending'
-        end
-        authorize order, :new?
         redirect_url = new_order_payment_path(order)
+        Rails.logger.info "Redirecting user #{user.id} to payment path for order #{order.id}"
         render json: { success: true, redirect_url: redirect_url }
       end
-    rescue ActiveRecord::RecordNotFound
-      render json: { success: false, error: "Question or option not found" }, status: :not_found
-    rescue Pundit::NotAuthorizedError
-      render json: { success: false, error: "Not authorized to perform this action" }, status: :forbidden
+    end
+  rescue ActiveRecord::RecordNotFound => e
+    Rails.logger.error "Record not found: #{e.message}"
+    render json: { success: false, error: "Question or option not found" }, status: :not_found
+  rescue Pundit::NotAuthorizedError => e
+    Rails.logger.error "Not authorized: #{e.message}"
+    render json: { success: false, error: "Not authorized to perform this action" }, status: :forbidden
   end
-
-
 
   # Démarre un nouveau test et redirige vers la première question du test
   def start_test

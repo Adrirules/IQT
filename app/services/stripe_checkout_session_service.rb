@@ -1,6 +1,7 @@
 class StripeCheckoutSessionService
   def call(event)
     session = event.data.object
+    Rails.logger.info "Stripe session event received: #{session.id}"
 
     order = Order.find_by(checkout_session_id: session.id)
     if order.present?

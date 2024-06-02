@@ -4,7 +4,8 @@ class OrdersController < ApplicationController
 
   def create
     iqtest = Iqtest.find(params[:iqtest_id])
-    order = Order.find_or_create_order(iqtest, current_user)
+    responder = current_user || GuestUser.find_or_create_by(session_id: session.id.to_s)
+    order = Order.create!(iqtest: iqtest, responder: responder, state: 'pending')
 
     session = Stripe::Checkout::Session.create(
       payment_method_types: ['card'],
@@ -20,6 +21,7 @@ class OrdersController < ApplicationController
     )
 
     order.update(checkout_session_id: session.id)
+    Rails.logger.info "Created Stripe checkout session for order #{order.id} with session id #{session.id}"
     redirect_to new_order_payment_path(order)
   end
 

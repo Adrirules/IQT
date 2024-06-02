@@ -8,6 +8,7 @@ class User < ApplicationRecord
   has_many :user_test_scores, dependent: :destroy
   has_many :responses, as: :responder, dependent: :destroy
   has_many :orders, as: :responder, dependent: :destroy
+  has_many :user_test_scores, as: :responder
 
   attribute :user_type, :string
 end

@@ -9,10 +9,8 @@ class UsersController < ApplicationController
       if @user.persisted?
         sign_in(@user)
 
-        @iqtest = Iqtest.find(session[:iqtest_id])
-        @order = Order.find_or_create_order(@iqtest, @user)
-
-        redirect_to new_order_payment_path(@order), notice: 'Account created successfully! Please complete the payment to view your IQ test results.'
+        # Rediriger vers l'URL stockée dans la session ou la page de paiement par défaut
+        redirect_to(session.delete(:redirect_to_after_signup) || new_order_payment_path(@order), notice: 'Account created successfully! Please complete the payment to view your IQ test results.')
       else
         render :new
       end

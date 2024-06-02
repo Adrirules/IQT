@@ -1,5 +1,6 @@
 document.addEventListener('turbolinks:load', function () {
   const optionsContainer = document.getElementById('options-container');
+  console.log("Page loaded, initializing option selection handling.");
 
   if (optionsContainer) {
     optionsContainer.addEventListener('click', function (event) {
@@ -10,7 +11,7 @@ document.addEventListener('turbolinks:load', function () {
       let optionId = optionItem.dataset.optionId;
       let iqtestId = optionItem.dataset.iqtestId;
 
-      console.log("Option clicked:", { questionId, optionId, iqtestId });
+      console.log(`Option selected: Question ID = ${questionId}, Option ID = ${optionId}, IQTest ID = ${iqtestId}`);
 
       fetch('/process_option_selection', {
         method: 'POST',
@@ -25,7 +26,7 @@ document.addEventListener('turbolinks:load', function () {
           return response.json();
         })
         .then(data => {
-          console.log("Server response:", data);
+          console.log("Response from server:", data);
           if (data.success) {
             if (data.nextQuestionUrl) {
               window.location.href = data.nextQuestionUrl;

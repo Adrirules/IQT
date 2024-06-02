@@ -1,4 +1,3 @@
-# app/controllers/payments_controller.rb
 class PaymentsController < ApplicationController
   before_action :set_order, only: [:new, :create]
   before_action :authorize_order, only: [:new, :create]

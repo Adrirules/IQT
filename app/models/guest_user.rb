@@ -2,7 +2,7 @@ class GuestUser < ApplicationRecord
   has_many :user_test_scores, dependent: :destroy
   has_many :responses, as: :responder, dependent: :destroy
   has_many :orders, as: :responder, dependent: :destroy
-
+  has_many :user_test_scores, as: :responder
 
   def self.find_or_create_by_session(session_id)
     find_or_create_by(session_id: session_id)
