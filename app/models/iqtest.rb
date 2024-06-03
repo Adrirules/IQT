@@ -8,6 +8,7 @@ class Iqtest < ApplicationRecord
   has_many :user_test_scores, dependent: :destroy
   monetize :price_cents
   has_many :orders, dependent: :destroy
+  has_one_attached :image
 
 
 end
