@@ -18,6 +18,6 @@
     "webpack-dev-server": "^3"
   },
   "scripts": {
-    "build": "webpack --watch"
+    "build": "NODE_OPTIONS=--openssl-legacy-provider webpack"
   }
 }
