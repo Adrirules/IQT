@@ -26,7 +26,10 @@
     "webpack-dev-server": "^5.0.4"
   },
   "scripts": {
-    "postinstall": "npm install webpack-cli",
-    "build": "NODE_OPTIONS=--openssl-legacy-provider webpack"
+    "postinstall": "npm install webpack-cli"
+  },
+  "engines": {
+    "node": ">=14.17.0 <15",
+    "npm": ">=6.14.13 <7"
   }
 }
