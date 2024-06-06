@@ -26,6 +26,7 @@
     "webpack-dev-server": "^5.0.4"
   },
   "scripts": {
+    "build": "webpack --mode production",
     "postinstall": "npm install webpack-cli"
   },
   "engines": {
