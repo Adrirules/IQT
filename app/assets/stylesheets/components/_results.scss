@@ -1,0 +1,72 @@
+.question-image-result,
+.option-image-result {
+  width: 100%;
+  /* ou une largeur fixe selon vos besoins */
+  height: auto;
+  max-width: 300px;
+  /* Limite la taille de l'image pour les grandes images */
+  padding: 10px 0;
+}
+
+.option-item-result {
+  font-size: 14px;
+  /* Réduire la taille de la police pour les options */
+  padding: 5px;
+  /* Padding réduit pour un meilleur ajustement */
+  margin-bottom: 10px;
+  /* Espacement entre les options */
+  display: flex;
+  align-items: center;
+  /* Centrer le texte et l'image verticalement */
+}
+
+.option-image-result {
+  width: 50px;
+  /* Taille réduite pour les images des options */
+  object-fit: cover;
+  /* S'assure que l'image couvre bien la zone sans déformer */
+  margin-right: 10px;
+  /* Espace entre l'image et le texte de l'option */
+}
+
+.page-link {
+  font-size: 16px;
+  /* Taille de la police pour les liens de pagination */
+  padding: 8px 12px;
+  /* Padding ajusté pour les liens de pagination */
+}
+
+/* Styles spécifiques pour indiquer les réponses correctes et incorrectes */
+.bg-success {
+  background-color: #dff0d8;
+  /* Vert clair pour les réponses correctes */
+}
+
+.bg-danger {
+  background-color: #f2dede;
+  /* Rouge clair pour les réponses incorrectes */
+}
+
+.container-result {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.review-container-result {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.question-container-result,
+.options-container-result {
+  flex: 1;
+}
+
+.question-image-result,
+.option-image-result {
+  width: 100%;
+  max-width: 100px;
+  /* ajustez la taille selon vos besoins */
+  height: auto;
+}

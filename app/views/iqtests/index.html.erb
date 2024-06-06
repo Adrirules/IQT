@@ -1,0 +1,37 @@
+<!-- app/views/iqtests/index.html.erb -->
+<h1>Iq Tests</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th colspan="5"></th> <!-- Ajout de deux colonnes pour les nouveaux liens -->
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @iqtests.each do |iqtest| %>
+      <tr>
+        <td><%= iqtest.name %></td>
+        <td><%= iqtest.description %></td>
+        <td>Amount: <%= humanized_money_with_symbol(iqtest.price) %></td>
+
+        <td><%= link_to 'Show', iqtest_path(iqtest) %></td>
+        <% if policy(iqtest).edit? %>
+          <td><%= link_to 'Edit', edit_iqtest_path(iqtest) %></td>
+        <% end %>
+        <% if policy(iqtest).destroy? %>
+          <td><%= button_to "Destroy", iqtest_path(iqtest), class: "btn btn-danger", method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <% end %>
+        <% if policy(Question.new(iqtest: iqtest)).create? %>
+          <td><%= link_to 'New Question', new_iqtest_question_path(iqtest), class: "btn btn-primary" %></td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Iq Test', new_iqtest_path %>

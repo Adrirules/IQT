@@ -1,0 +1,26 @@
+<div class="navbar navbar-expand-sm navbar-light navbar-lewagon">
+  <div class="container-fluid">
+    <!-- Logo à gauche -->
+    <div class="navbar-part left">
+      <%= link_to root_path, class: "navbar-brand" do %>
+        <%= image_tag "https://res.cloudinary.com/adrirules/image/upload/v1714419247/IQTlogo.webp" %>
+      <% end %>
+    </div>
+
+    <!-- Liens à droite -->
+    <div class="navbar-part right">
+      <% if user_signed_in? %>
+        <div class="button-logout">
+          <%= link_to "Logout", destroy_user_session_path, method: :delete, class: "nav-link" %>
+        </div>
+      <% else %>
+        <div class="button-signup">
+          <%= link_to "Sign up", new_user_registration_path, class: "nav-link" %>
+        </div>
+      <% end %>
+      <div class="button-newtest">
+        <%= link_to "New Test", first_question_path, class: "nav-link" %>
+      </div>
+    </div>
+  </div>
+</div>

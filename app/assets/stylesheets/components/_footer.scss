@@ -1,0 +1,31 @@
+.footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 1em;
+  background-color: #f1f1f1;
+  border-top: 1px solid #ddd;
+}
+
+.footer-left,
+.footer-center,
+.footer-right {
+  flex: 1;
+}
+
+.footer-left {
+  text-align: left;
+}
+
+.footer-center {
+  text-align: center;
+}
+
+.footer-center a {
+  margin: 0 10px;
+  text-decoration: none;
+  color: #333;
+}
+
+.footer-right {
+  text-align: right;
+}

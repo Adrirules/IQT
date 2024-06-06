@@ -1,0 +1,39 @@
+<!-- app/views/iqtests/show.html.erb -->
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @iqtest.name %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @iqtest.description %>
+</p>
+<% if policy(@iqtest).edit? %>
+  <%= link_to 'Edit', edit_iqtest_path(@iqtest) %> |
+<% end %>
+<%= link_to 'Tous les tests', iqtests_path %> |
+<% if policy(Question.new(iqtest: @iqtest)).create? && (current_user.admin? || @iqtest.user == current_user) %>
+  <%= link_to 'Add a Question', new_iqtest_question_path(@iqtest) %>
+<% end %>
+<% if policy(@iqtest).destroy? %>
+  | <%= button_to "Delete", iqtest_path(@iqtest),class: "btn btn-danger", method: :delete, data: { confirm: 'Are you sure?' } %>
+<% end %>
+
+<p><strong>Questions</strong></p>
+<ul class="list-group">
+  <% @iqtest.questions.each do |question| %>
+    <li class="list-group-item">
+      <%= question.contentq %>
+      <% if policy(question).destroy? && (current_user.admin? || @iqtest.user == current_user) %>
+        <%= button_to "Destroy", question_path(question), class: "btn btn-danger", method: :delete, data: { confirm: 'Are you sure?' } %>
+      <% end %>
+        <%= link_to "Show Question", iqtest_question_path(@iqtest, question) %>
+      <% if policy(question).create_option? %>
+        <%= link_to "Add Option", new_iqtest_question_option_path(@iqtest, question) %>
+      <% end %>
+    </li>
+  <% end %>
+</ul>
+<br>

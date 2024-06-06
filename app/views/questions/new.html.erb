@@ -1,0 +1,27 @@
+<%= form_for [@iqtest, @question], html: { multipart: true } do |f| %> <!-- Ajout de "multipart: true" pour le téléversement de fichiers -->
+  <% if @question.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@question.errors.count, "error") %> prohibited this question from being saved:</h2>
+
+      <ul>
+        <% @question.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :contentq %>
+    <%= f.text_area :contentq %>
+  </div>
+
+  <div class="field">
+    <%= f.label :imageq %>
+    <%= f.file_field :imageq %> <!-- Champ pour téléverser l'image -->
+  </div>
+
+  <div class="actions">
+    <%= f.submit 'Create Question' %>
+  </div>
+<% end %>

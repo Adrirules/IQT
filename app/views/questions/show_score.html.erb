@@ -1,0 +1,47 @@
+<div class="container-question">
+  <h1>Your IQ Score is <%= @iq_score %></h1>
+  <h2>Correct Answers: <%= @score %> out of <%= @questions.count %></h2>
+
+  <% @questions.each_with_index do |question, index| %>
+    <div class="row"> <!-- Chaque ligne contient une question et ses options -->
+      <!-- Section pour la question -->
+      <div class="col-md-6">
+        <div class="question-card">
+          <% if question.imageq.attached? %>
+            <div id="question-text-container">
+              <h3>Question <%= index + 1 %> :</h3>
+            </div>
+            <%= image_tag question.imageq, class: "img-fluid", alt: "Image de la question" %>
+          <% else %>
+            <div id="question-text-container">
+              <h3>Question <%= index + 1 %></h3>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Section pour les options de cette question spécifique -->
+      <div class="col-md-6">
+        <div class="options-card">
+          <% question.options.each do |option| %>
+            <div class="<%= 'option-item ' unless current_user&.admin? %><%= 'bg-success' if option.isreponsecorrect %><%= 'bg-danger' if @responses_map[question.id] == option.id && !option.isreponsecorrect %>">
+              <% if option.image.attached? %>
+                <%= image_tag option.image, class: "img-fluid", alt: "Image de l'option" %>
+              <% end %>
+              <p><%= option.reponse %></p>
+              <% if option.id == @responses_map[question.id] %>
+                <span>(Your choice)</span>
+              <% end %>
+              <% if option.isreponsecorrect %>
+                <span>(Correct)</span>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div> <!-- Fin de la ligne pour une question et ses options -->
+  <% end %>
+  <% if @order && @order.state != 'paid' %>
+    <%= link_to 'Complete Payment', new_payment_path(order_id: @order.id), class: 'btn btn-primary' %>
+  <% end %>
+</div>
