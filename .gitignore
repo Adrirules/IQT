@@ -39,3 +39,4 @@ yarn-debug.log*
 .env*
 
 package-lock.json
+yarn.lock
