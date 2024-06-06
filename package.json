@@ -23,7 +23,7 @@
     "@babel/plugin-transform-runtime": "^7.24.6",
     "babel-plugin-dynamic-import-node": "^2.3.3",
     "babel-plugin-macros": "^3.1.0",
-    "webpack-dev-server": "^3"
+    "webpack-dev-server": "^5.0.4"
   },
   "scripts": {
     "build": "NODE_OPTIONS=--openssl-legacy-provider webpack"
