@@ -83,3 +83,4 @@ config/initializers/secret_token.rb
 /cache/
 /extensions/
 /specifications/
+/bundler/
