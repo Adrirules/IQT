@@ -74,3 +74,12 @@ config/initializers/secret_token.rb
 
 # Only include if you have production secrets in this file, which is no longer a Rails default
 # config/secrets.yml
+# Ignorer les fichiers dans le dossier cache
+
+# Ignorer les fichiers dans le dossier extensions
+/extensions/
+/gems/
+/bin/
+/cache/
+/extensions/
+/specifications/
