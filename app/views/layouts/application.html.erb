@@ -15,7 +15,7 @@
 
     <!-- Si tu utilises preload, assure-toi d'ajouter `as` correctement -->
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload", as: "style" %>
-    <%= javascript_pack_tag 'application', 'data-turbo-track': 'reload', as: 'script' %>
+    <%= javascript_packs_with_chunks_tag 'application', 'data-turbo-track': 'reload' %>
   </head>
 
   <body>
