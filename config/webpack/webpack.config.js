@@ -1,3 +1,3 @@
-const { webpackConfig } = require('shakapacker')
+const { webpackConfig } = require('webpacker')
 
 module.exports = webpackConfig

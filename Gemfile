@@ -46,7 +46,6 @@ gem "bootsnap", require: false
 # gem "sassc-rails"
 gem 'cocoon'
 gem 'webpacker', '~> 5.4.4'
-'shakapacker'
 gem 'pry'
 
 
