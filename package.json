@@ -9,7 +9,7 @@
     "cacache": "^18.0.3",
     "cocoon": "^0.1.1",
     "compression-webpack-plugin": "^11.1.0",
-    "core-js": "^3.21.1",
+    "core-js": "3",
     "cssnano": "^7.0.2",
     "glob-parent": "^6.0.2",
     "regenerator-runtime": "0.14.1",
