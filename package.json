@@ -55,7 +55,7 @@
     "presets": "@babel/preset-env"
   },
   "scripts": {
-    "start": "node index.js",
+    "start": "bin/rails server -b 0.0.0.0",
     "heroku-postbuild": "yarn install --production=false && yarn run build",
     "build": "webpack --config ./config/webpack/webpack.config.js"
   },
