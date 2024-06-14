@@ -45,7 +45,7 @@ gem "bootsnap", require: false
 # Use Sass to process CSS
 # gem "sassc-rails"
 gem 'cocoon'
-gem 'webpacker', '~> 5.4.4'
+gem 'jsbundling-rails'
 gem 'pry'
 
 
