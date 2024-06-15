@@ -1,3 +1,4 @@
+// app/javascript/packs/submit_order_with_last_response.js
 document.addEventListener('turbolinks:load', function () {
   const optionsContainer = document.getElementById('options-container');
   console.log("Page loaded, initializing option selection handling.");

@@ -1,3 +1,4 @@
+// app/javascript/packs/timer.js
 document.addEventListener('turbolinks:load', function () {
   let startTime = new Date(document.getElementById('start-time').value);
   let endTime = new Date(startTime.getTime() + 1200000); // 20 minutes plus tard

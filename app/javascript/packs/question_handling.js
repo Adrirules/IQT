@@ -1,3 +1,6 @@
+// app/javascript/packs/question_handling.js
+console.log("question_handling.js is loaded");
+
 document.addEventListener('turbolinks:load', function () {
   const optionsContainer = document.getElementById('options-container');
   console.log("Page loaded, initializing option selection handling.");

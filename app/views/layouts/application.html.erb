@@ -16,7 +16,6 @@
     <!-- Si tu utilises preload, assure-toi d'ajouter `as` correctement -->
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload", as: "style" %>
     <%= javascript_include_tag 'application', 'data-turbo-track': 'reload', type: 'module' %>
-    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
   <body>
@@ -35,7 +34,6 @@
     <% unless @hide_navbar_and_footer %>
       <%= render 'shared/footer' %>
     <% end %>
-    <%= javascript_include_tag 'question_handling', 'data-turbo-track': 'reload', type: 'module' %>
 
   </body>
 </html>

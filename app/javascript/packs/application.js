@@ -11,6 +11,8 @@ import "regenerator-runtime/runtime";
 // import './question_handling';
 import './timer';
 import './submit_order_with_last_response';
+import "./packs/question_handling";
+
 
 Rails.start();
 Turbolinks.start();
