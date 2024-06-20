@@ -1,0 +1,82 @@
+//stylesheets/pages/signup.scss
+.container-login {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  width: 100%;
+  /* Adapté aux mobiles, prend toute la largeur disponible */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+}
+
+.box-login {
+  display: flex;
+  flex-direction: column;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  margin: 0.5rem 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+}
+
+
+//Desktop Version
+@media (min-width: 768px) {
+  .container-login {
+    justify-content: flex-start;
+  }
+
+  .login-card {
+    width: 50%;
+    /* Plus petit et centré pour les desktops */
+    max-width: 600px;
+    /* Largeur maximale pour la carte de connexion */
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .box-login,
+  .form-actions {
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    margin-right: 10px;
+    /* Ajoute un espace entre les champs */
+  }
+
+  button {
+    width: auto;
+    /* Adaptez la taille du bouton pour qu'il ne prenne pas toute la largeur */
+  }
+}

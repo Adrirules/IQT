@@ -86,8 +86,7 @@ class QuestionsController < ApplicationController
     @iqtest = Iqtest.find(params[:iqtest_id])
     authorize @iqtest, :show_score?
 
-    @order = Order.find_or_create_order(@iqtest, @user)
-
+    @order = Order.find_by(iqtest: @iqtest, responder: @user)
     unless @order.state == 'paid'
       return redirect_to new_order_payment_path(order_id: @order.id), alert: 'You must complete the payment to view your score.'
     end
