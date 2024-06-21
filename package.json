@@ -12,6 +12,7 @@
     "core-js": "3",
     "cssnano": "^7.0.2",
     "glob-parent": "^6.0.2",
+    "heroku-ssl-redirect": "^0.1.1",
     "regenerator-runtime": "0.14.1",
     "terser-webpack-plugin": "^5.3.10",
     "turbolinks": "^5.2.0"

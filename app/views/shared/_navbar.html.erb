@@ -10,15 +10,15 @@
     <!-- Liens à droite -->
     <div class="navbar-part right">
       <% if user_signed_in? %>
-        <div class="button-logout">
+        <div class="btn-ghost">
           <%= link_to "Logout", destroy_user_session_path, method: :delete, class: "nav-link" %>
         </div>
       <% else %>
-        <div class="button-signup">
+        <div class="btn-ghost">
           <%= link_to "Sign up", new_user_registration_path, class: "nav-link" %>
         </div>
       <% end %>
-      <div class="button-newtest">
+      <div class="btn-flat">
         <%= link_to "New Test", first_question_path, class: "nav-link" %>
       </div>
     </div>
