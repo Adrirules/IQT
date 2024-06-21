@@ -5,8 +5,11 @@ class IqtestPolicy < ApplicationPolicy
     end
   end
 
+  def index?
+    user.admin? # Seuls les administrateurs peuvent créer de nouveaux IQTests
+  end
   def show?
-    true # Autoriser tout le monde à voir les IQTests
+    user.admin? # Seuls les administrateurs peuvent créer de nouveaux IQTests
   end
 
   def create?

@@ -64,20 +64,13 @@
   </div>
 </div>
 
-
-
-
-
-
-
-
-
-
-
-
-<h1>My home view 🚀</h1>
-<ul>
-  <li><%= link_to "Know more about us", about_path %></li>
-  <li><%= link_to "Meet our team", contact_path %></li>
-  <li><%= link_to 'Tous les tests', iqtests_path %></li>
-</ul>
+<% if user_signed_in? && current_user.admin? %>
+  <div>
+    <h1>My home view 🚀</h1>
+    <ul>
+      <li><%= link_to "Know more about us", about_path %></li>
+      <li><%= link_to "Meet our team", contact_path %></li>
+      <li><%= link_to 'Tous les tests', iqtests_path %></li>
+    </ul>
+  </div>
+<% end %>

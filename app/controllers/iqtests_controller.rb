@@ -4,6 +4,7 @@ class IqtestsController < ApplicationController
 
   def index
     @iqtests = policy_scope(Iqtest)
+    authorize Iqtest
   end
 
   def show
