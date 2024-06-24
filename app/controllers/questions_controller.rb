@@ -109,44 +109,60 @@ class QuestionsController < ApplicationController
 
   def process_option_selection
     Rails.logger.info "Processing option selection: params = #{params.inspect}"
-    question = Question.find(params[:question_id])
-    authorize question, :select_option?
 
-    option = question.options.find(params[:option_id])
-    user = current_user || GuestUser.find_or_create_by(session_id: session.id.to_s)
-
-    response = Response.find_or_initialize_by(responder: user, question: question)
-    response.option = option
-    response.save
-
-    Rails.logger.info "User #{user.id} selected option #{option.id} for question #{question.id}"
-
-    next_question = question.next_question
-    if next_question
-      render json: { success: true, nextQuestionUrl: iqtest_question_path(question.iqtest, next_question) }
-    else
-      order = Order.find_or_create_by(iqtest: question.iqtest, responder: user, state: 'pending')
-      order.update(amount_cents: question.iqtest.price_cents)
-      Rails.logger.info "Order #{order.id} created or found for user #{user.id} with state #{order.state}"
-
-      unless user_signed_in?
-        session[:guest_user_id] = user.id
-        session[:redirect_to_after_signup] = new_order_payment_path(order)
-        Rails.logger.info "Redirecting guest user #{user.id} to sign up"
-        render json: { success: true, redirect_url: new_user_registration_path }
-      else
-        redirect_url = new_order_payment_path(order)
-        Rails.logger.info "Redirecting user #{user.id} to payment path for order #{order.id}"
-        render json: { success: true, redirect_url: redirect_url }
-      end
+    # Validate presence of required parameters
+    unless params[:question_id] && params[:option_id] && params[:iqtest_id]
+      render json: { success: false, error: "Missing parameters" }, status: :bad_request
+      return
     end
-  rescue ActiveRecord::RecordNotFound => e
-    Rails.logger.error "Record not found: #{e.message}"
-    render json: { success: false, error: "Question or option not found" }, status: :not_found
-  rescue Pundit::NotAuthorizedError => e
-    Rails.logger.error "Not authorized: #{e.message}"
-    render json: { success: false, error: "Not authorized to perform this action" }, status: :forbidden
+
+    begin
+      question = Question.find(params[:question_id])
+      authorize question, :select_option?
+
+      option = question.options.find(params[:option_id])
+      user = current_user || find_or_create_guest_user
+
+      response = Response.find_or_initialize_by(responder: user, question: question)
+      response.option = option
+      response.save!
+
+      Rails.logger.info "User #{user.id} selected option #{option.id} for question #{question.id}"
+
+      next_question = question.next_question
+      if next_question
+        render json: { success: true, nextQuestionUrl: iqtest_question_path(question.iqtest, next_question) }
+      else
+        order = Order.find_or_create_by(iqtest: question.iqtest, responder: user, state: 'pending')
+        order.update!(amount_cents: question.iqtest.price_cents)
+        Rails.logger.info "Order #{order.id} created or found for user #{user.id} with state #{order.state}"
+
+        unless user_signed_in?
+          session[:guest_user_id] = user.id
+          session[:redirect_to_after_signup] = new_order_payment_path(order)
+          Rails.logger.info "Redirecting guest user #{user.id} to email capture"
+          render json: { success: true, redirect_url: new_order_path(iqtest_id: question.iqtest.id) }
+        else
+          redirect_url = new_order_payment_path(order)
+          Rails.logger.info "Redirecting user #{user.id} to payment path for order #{order.id}"
+          render json: { success: true, redirect_url: redirect_url }
+        end
+      end
+    rescue ActiveRecord::RecordNotFound => e
+      Rails.logger.error "Record not found: #{e.message}"
+      render json: { success: false, error: "Question or option not found" }, status: :not_found
+    rescue Pundit::NotAuthorizedError => e
+      Rails.logger.error "Not authorized: #{e.message}"
+      render json: { success: false, error: "Not authorized to perform this action" }, status: :forbidden
+    rescue ActiveRecord::RecordInvalid => e
+      Rails.logger.error "Invalid record: #{e.message}"
+      render json: { success: false, error: "Invalid data" }, status: :unprocessable_entity
+    rescue StandardError => e
+      Rails.logger.error "Standard error: #{e.message}"
+      render json: { success: false, error: "An error occurred. Please try again." }, status: :internal_server_error
+    end
   end
+
 
   # Démarre un nouveau test et redirige vers la première question du test
   def start_test
@@ -216,5 +232,14 @@ class QuestionsController < ApplicationController
 
   def question_params
     params.require(:question).permit(:contentq, :imageq, options_attributes: [:reponse, :isreponsecorrect, :image, :_destroy, :id])
+  end
+
+  def find_or_create_guest_user
+    session_id = session.id.to_s
+    unique_identifier = SecureRandom.uuid
+    GuestUser.find_or_create_by(session_id: session_id) do |user|
+      user.unique_identifier = unique_identifier
+      user.email = nil
+    end
   end
 end

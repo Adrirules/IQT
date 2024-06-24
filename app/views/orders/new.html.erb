@@ -1,0 +1,13 @@
+<!-- app/views/orders/new.html.erb -->
+<h1>Enter your email to proceed to payment</h1>
+
+<%= form_with model: @order, url: orders_path, method: :post do |form| %>
+  <%= form.hidden_field :iqtest_id, value: @iqtest.id %>
+  <div class="field">
+    <%= form.label :email %>
+    <%= form.email_field :email, required: true %>
+  </div>
+  <div class="actions">
+    <%= form.submit "Proceed to Payment" %>
+  </div>
+<% end %>

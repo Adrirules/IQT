@@ -28,7 +28,7 @@ Rails.application.routes.draw do
   # Routes pour le CRUD de la ressource UserTestScore
   resources :user_test_scores, only: [:create]
 
-  resources :orders, only: [:create, :show] do
+  resources :orders, only: [:new, :create, :show] do
     resources :payments, only: [:new, :create]
   end
 

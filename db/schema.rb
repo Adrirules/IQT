@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_06_03_100958) do
+ActiveRecord::Schema[7.0].define(version: 2024_06_22_100439) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -47,6 +47,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_06_03_100958) do
     t.datetime "updated_at", null: false
     t.string "session_id"
     t.string "unique_identifier"
+    t.string "email"
     t.index ["session_id"], name: "index_guest_users_on_session_id", unique: true
     t.index ["unique_identifier"], name: "index_guest_users_on_unique_identifier", unique: true
   end
@@ -84,6 +85,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_06_03_100958) do
     t.integer "iqtest_id"
     t.string "responder_type"
     t.bigint "responder_id"
+    t.string "email"
     t.index ["responder_type", "responder_id"], name: "index_orders_on_responder"
   end
 

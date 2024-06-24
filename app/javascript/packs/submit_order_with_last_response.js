@@ -51,6 +51,7 @@ document.addEventListener('turbolinks:load', function () {
             if (data.nextQuestionUrl) {
               window.location.href = data.nextQuestionUrl;
             } else if (data.redirect_url) {
+              // Rediriger directement vers la page de commande pour capturer l'adresse email
               window.location.href = data.redirect_url;
             }
           } else {

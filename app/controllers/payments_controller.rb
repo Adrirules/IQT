@@ -1,6 +1,8 @@
 class PaymentsController < ApplicationController
   before_action :set_order, only: [:new, :create]
   before_action :authorize_order, only: [:new, :create]
+  skip_before_action :authenticate_user!, only: [:new, :create]
+
 
   def new
     Rails.logger.info "Displaying payment page for order #{@order.id}"
