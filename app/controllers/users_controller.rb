@@ -1,19 +1,14 @@
 class UsersController < ApplicationController
   def create
-    session_id = session.id.to_s
-    @guest_user = GuestUser.find_by(session_id: session_id)
+    @guest_user = guest_user # Utilise la méthode définie dans ApplicationController
 
     if @guest_user
       @user = @guest_user.convert_to_user(user_params)
 
       if @user.persisted?
         sign_in(@user)
-
-        # Re-associate any orders placed by the guest user to the newly created user account
         reassociate_orders(@guest_user, @user)
-
-        # Rediriger vers l'URL stockée dans la session ou la page de paiement par défaut
-        redirect_to(session.delete(:redirect_to_after_signup) || new_order_payment_path(@order), notice: 'Account created successfully! Please complete the payment to view your IQ test results.')
+        redirect_to session.delete(:redirect_to_after_signup) || new_order_payment_path(@order), notice: 'Account created successfully! Please complete the payment to view your IQ test results.'
       else
         render :new
       end

@@ -30,7 +30,17 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  helper_method :current_or_guest_user
+
+  def current_or_guest_user
+    if current_user
+      current_user
+    else
+      guest_user
+    end
+  end
+
   def guest_user
-    @guest_user ||= GuestUser.find(session[:guest_user_id])
+    @cached_guest_user ||= GuestUser.find_or_create_by_session(session.id.to_s)
   end
 end

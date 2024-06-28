@@ -6,8 +6,8 @@ Rails.application.routes.draw do
   devise_for :users, controllers: {
     registrations: 'users/registrations'
   }
-
   mount StripeEvent::Engine, at: '/stripe-webhooks'
+  post '/webhooks', to: 'webhooks#stripe'
 
   # Définit la route racine ("/") vers le contrôleur pages#home
   root to: "pages#home"

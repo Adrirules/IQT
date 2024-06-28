@@ -4,6 +4,8 @@ class QuestionsController < ApplicationController
   before_action :set_iqtest, only: [:show, :edit, :update, :destroy]
   skip_before_action :verify_authenticity_token
   before_action :hide_navbar_and_footer, only: [:show]
+  before_action :find_or_create_guest_user
+  after_action :verify_authorized, except: [:index, :show]
 
   def new
     @iqtest = Iqtest.find(params[:iqtest_id])
@@ -110,7 +112,6 @@ class QuestionsController < ApplicationController
   def process_option_selection
     Rails.logger.info "Processing option selection: params = #{params.inspect}"
 
-    # Validate presence of required parameters
     unless params[:question_id] && params[:option_id] && params[:iqtest_id]
       render json: { success: false, error: "Missing parameters" }, status: :bad_request
       return
@@ -123,29 +124,34 @@ class QuestionsController < ApplicationController
       option = question.options.find(params[:option_id])
       user = current_user || find_or_create_guest_user
 
+      if user.nil?
+        render json: { success: false, error: "Unable to find or create guest user" }, status: :internal_server_error
+        return
+      end
+
       response = Response.find_or_initialize_by(responder: user, question: question)
       response.option = option
       response.save!
-
       Rails.logger.info "User #{user.id} selected option #{option.id} for question #{question.id}"
 
       next_question = question.next_question
       if next_question
         render json: { success: true, nextQuestionUrl: iqtest_question_path(question.iqtest, next_question) }
       else
-        order = Order.find_or_create_by(iqtest: question.iqtest, responder: user, state: 'pending')
-        order.update!(amount_cents: question.iqtest.price_cents)
-        Rails.logger.info "Order #{order.id} created or found for user #{user.id} with state #{order.state}"
+        order = Order.find_or_initialize_by(iqtest_id: question.iqtest.id, responder: user)
+        if order.new_record?
+          order.state = 'pending'
+          order.amount_cents = question.iqtest.price_cents
+          order.save!
+          Rails.logger.info "Order #{order.id} created for user #{user.id} with state #{order.state}"
+        end
 
-        unless user_signed_in?
+        if user.is_a?(GuestUser)
           session[:guest_user_id] = user.id
           session[:redirect_to_after_signup] = new_order_payment_path(order)
-          Rails.logger.info "Redirecting guest user #{user.id} to email capture"
-          render json: { success: true, redirect_url: new_order_path(iqtest_id: question.iqtest.id) }
+          render json: { success: true, redirect_url: new_user_registration_path }
         else
-          redirect_url = new_order_payment_path(order)
-          Rails.logger.info "Redirecting user #{user.id} to payment path for order #{order.id}"
-          render json: { success: true, redirect_url: redirect_url }
+          render json: { success: true, redirect_url: new_order_payment_path(order) }
         end
       end
     rescue ActiveRecord::RecordNotFound => e
@@ -162,7 +168,6 @@ class QuestionsController < ApplicationController
       render json: { success: false, error: "An error occurred. Please try again." }, status: :internal_server_error
     end
   end
-
 
   # Démarre un nouveau test et redirige vers la première question du test
   def start_test
@@ -235,11 +240,18 @@ class QuestionsController < ApplicationController
   end
 
   def find_or_create_guest_user
-    session_id = session.id.to_s
-    unique_identifier = SecureRandom.uuid
-    GuestUser.find_or_create_by(session_id: session_id) do |user|
-      user.unique_identifier = unique_identifier
-      user.email = nil
+    session_id = session[:session_id] || request.session_options[:id]
+    guest_user = GuestUser.find_by(session_id: session_id)
+
+    unless guest_user
+      guest_user = GuestUser.create!(session_id: session_id)
+      Rails.logger.info "New GuestUser created with session ID: #{session_id}"
     end
+
+    guest_user
+  rescue ActiveRecord::RecordInvalid => e
+    Rails.logger.error "Failed to create GuestUser: #{e.message}"
+    nil
   end
+
 end
