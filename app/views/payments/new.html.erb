@@ -7,6 +7,13 @@
   <form action="<%= order_payments_path(@order) %>" method="post" id="payment-form">
     <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
 
+    <% unless user_signed_in? %>
+      <div class="field">
+        <%= label_tag :email, 'Email Address:' %>
+        <%= email_field_tag :email, nil, required: true %>
+      </div>
+    <% end %>
+
     <div id="card-element">
       <!-- A Stripe Element will be inserted here. -->
     </div>
@@ -17,6 +24,7 @@
     <button type="submit">Submit Payment</button>
   </form>
 </div>
+
 
 <script src="https://js.stripe.com/v3/"></script>
 <script>

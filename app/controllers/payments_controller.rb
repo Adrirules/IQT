@@ -8,34 +8,40 @@ class PaymentsController < ApplicationController
     Rails.logger.info "Displaying payment page for order #{@order.id}"
   end
 
+# app/controllers/payments_controller.rb
   def create
+    @order = Order.find(params[:order_id])
     Rails.logger.info "Processing payment for order #{@order.id}"
 
-    # Utiliser url_for pour obtenir l'URL de l'image
-    image_url = url_for(@order.iqtest.image) if @order.iqtest.image.attached?
+    # Mettre à jour l'email de l'order et du GuestUser si nécessaire
+    unless user_signed_in?
+      email = params[:email]
+      @order.update(email: email)
+      if @order.responder_type == 'GuestUser'
+        guest_user = GuestUser.find(@order.responder_id)
+        guest_user.update(email: email) if guest_user.email.blank?
+      end
+    end
 
-    line_item = {
-      price_data: {
-        currency: 'usd',
-        product_data: {
-          name: @order.iqtest.name,
-          description: @order.iqtest.description
-        },
-        unit_amount: @order.amount_cents,
-      },
-      quantity: 1,
-    }
-
-    # Ajouter l'URL de l'image uniquement si elle est présente
-    line_item[:price_data][:product_data][:images] = [image_url] if image_url.present?
-
+    # Reste du code pour créer la session Stripe
     session = Stripe::Checkout::Session.create(
       payment_method_types: ['card'],
-      line_items: [line_item],
+      line_items: [{
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: @order.iqtest.name,
+            description: @order.iqtest.description,
+            images: [@order.iqtest.image.attached? ? url_for(@order.iqtest.image) : nil].compact
+          },
+          unit_amount: @order.amount_cents,
+        },
+        quantity: 1,
+      }],
       mode: 'payment',
       success_url: show_score_url(iqtest_id: @order.iqtest.id, user_type: @order.responder_type, user_id: @order.responder_id),
       cancel_url: new_order_payment_url(@order),
-      locale: 'en', # Set the locale to English
+      locale: 'en'
     )
 
     @order.update(checkout_session_id: session.id)
@@ -43,7 +49,7 @@ class PaymentsController < ApplicationController
     redirect_to session.url, allow_other_host: true
   rescue Stripe::InvalidRequestError => e
     Rails.logger.error "Stripe error: #{e.message}"
-    render json: { success: false, error: e.message }, status: :unprocessable_entity
+    render json: { error: e.message }, status: :unprocessable_entity
   end
 
   private

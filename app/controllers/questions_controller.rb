@@ -122,7 +122,7 @@ class QuestionsController < ApplicationController
       authorize question, :select_option?
 
       option = question.options.find(params[:option_id])
-      user = current_user || find_or_create_guest_user
+      user = current_user || find_or_create_guest_user # Assurez-vous que cette méthode gère correctement les sessions
 
       if user.nil?
         render json: { success: false, error: "Unable to find or create guest user" }, status: :internal_server_error
@@ -146,13 +146,8 @@ class QuestionsController < ApplicationController
           Rails.logger.info "Order #{order.id} created for user #{user.id} with state #{order.state}"
         end
 
-        if user.is_a?(GuestUser)
-          session[:guest_user_id] = user.id
-          session[:redirect_to_after_signup] = new_order_payment_path(order)
-          render json: { success: true, redirect_url: new_user_registration_path }
-        else
-          render json: { success: true, redirect_url: new_order_payment_path(order) }
-        end
+        # Assumer que l'email est déjà associé avec le GuestUser à ce stade
+        render json: { success: true, redirect_url: new_order_payment_path(order) }
       end
     rescue ActiveRecord::RecordNotFound => e
       Rails.logger.error "Record not found: #{e.message}"
@@ -168,6 +163,7 @@ class QuestionsController < ApplicationController
       render json: { success: false, error: "An error occurred. Please try again." }, status: :internal_server_error
     end
   end
+
 
   # Démarre un nouveau test et redirige vers la première question du test
   def start_test

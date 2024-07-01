@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_06_22_100439) do
+ActiveRecord::Schema[7.0].define(version: 2024_07_01_201340) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -86,6 +86,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_06_22_100439) do
     t.string "responder_type"
     t.bigint "responder_id"
     t.string "email"
+    t.string "payment_intent_id"
     t.index ["responder_type", "responder_id"], name: "index_orders_on_responder"
   end
 

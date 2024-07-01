@@ -19,10 +19,22 @@ class WebhooksController < ApplicationController
     case event['type']
     when 'payment_intent.succeeded'
       payment_intent = event['data']['object']
-      # Handle the event
+      order = Order.find_by(payment_intent_id: payment_intent.id)
+      if order.present?
+        order.update(state: 'paid')
+        OrderMailer.payment_success(order).deliver_now
+      else
+        Rails.logger.error "Order not found for payment intent id: #{payment_intent.id}"
+      end
     when 'charge.succeeded'
       charge = event['data']['object']
-      # Handle the event
+      order = Order.find_by(payment_intent_id: charge.payment_intent)
+      if order.present?
+        order.update(state: 'paid')
+        OrderMailer.payment_success(order).deliver_now
+      else
+        Rails.logger.error "Order not found for charge payment intent id: #{charge.payment_intent}"
+      end
     else
       puts "Unhandled event type: #{event['type']}"
     end
