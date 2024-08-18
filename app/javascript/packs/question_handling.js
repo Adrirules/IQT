@@ -13,6 +13,12 @@ document.addEventListener('turbolinks:load', function () {
 
       console.log(`Option selected: Question ID = ${questionId}, Option ID = ${optionId}, IQTest ID = ${iqtestId}`);
 
+      // Validation des données
+      if (!questionId || !optionId || !iqtestId) {
+        console.error('Invalid data:', { questionId, optionId, iqtestId });
+        return;
+      }
+
       // Envoi des données de sélection d'option au serveur
       fetch('/process_option_selection', {
         method: 'POST',
@@ -38,7 +44,10 @@ document.addEventListener('turbolinks:load', function () {
             console.error('Server error:', data.error);
           }
         })
-        .catch(error => console.error('Error handling option selection:', error));
-    });
+        .catch(error => {
+          console.error('Error handling option selection:', error);
+          alert('An error occurred while processing your selection. Please try again.');
+        });
+    }, { once: true });
   }
 });

@@ -10,7 +10,7 @@ class QuestionsController < ApplicationController
   def new
     @iqtest = Iqtest.find(params[:iqtest_id])
     @question = Question.new
-    @question.iqtest = @iqtest # Assurez-vous que la nouvelle question est associée à l'IQTest
+    @question.iqtest = @iqtest
     authorize @question
   end
 
@@ -29,34 +29,9 @@ class QuestionsController < ApplicationController
   def show
     @iqtest = Iqtest.find(params[:iqtest_id])
     @question = Question.find(params[:id])
-    authorize @question # Assurez-vous que la politique de la question est autorisée
+    authorize @question
     @options = @question.options.sort_by { |option| option.reponse.downcase }
-    # Variable pour déterminer si l'utilisateur peut créer une option
     @options_creatable = policy(@question).create_option?
-  end
-
-
-  def edit
-  end
-
-  def update
-    if @question.update(question_params)
-      redirect_to iqtest_question_path(@question.iqtest, @question), notice: 'Question was successfully updated.'
-    else
-      render :edit, status: :unprocessable_entity
-      #render :edit
-    end
-  end
-
-  def destroy
-  @question = Question.find_by(id: params[:id])
-    if @question
-      @question.destroy
-      redirect_to iqtest_path(@question.iqtest), notice: 'Question was successfully destroyed.'
-    else
-      redirect_to root_path, alert: 'Question not found.'
-    end
-     # skip_authorization
   end
 
   def first_question
@@ -72,7 +47,7 @@ class QuestionsController < ApplicationController
 
     next_question = current_iqtest.questions.find_by(id: current_question.id + 1)
 
-    if next_question.nil? # Si c'est la dernière question
+    if next_question.nil?
       next_question_url = iqtest_question_show_score_url(current_iqtest, current_question.iqtest.questions.last)
     else
       next_question_url = iqtest_question_url(current_iqtest, next_question)
@@ -138,17 +113,16 @@ class QuestionsController < ApplicationController
       if next_question
         render json: { success: true, nextQuestionUrl: iqtest_question_path(question.iqtest, next_question) }
       else
-        # Vérifiez si une commande existe déjà pour ce test et cet utilisateur
-        order = Order.find_by(iqtest_id: question.iqtest.id, responder: user)
-        unless order
-          order = Order.new(iqtest_id: question.iqtest.id, responder: user, state: 'pending', amount_cents: question.iqtest.price_cents)
-          if order.save
-            Rails.logger.info "Order #{order.id} created for user #{user.id} with state #{order.state}"
-          else
-            Rails.logger.error "Failed to create order: #{order.errors.full_messages.join(', ')}"
-            render json: { success: false, error: "Unable to create order" }, status: :unprocessable_entity
-            return
-          end
+        # Supprimer les anciens ordres non finalisés pour ce `GuestUser`
+        user.orders.where(state: 'pending').where.not(id: user.orders.last).destroy_all
+
+        # Créer un nouvel ordre ou utiliser l'ordre existant
+        order = user.orders.find_or_initialize_by(iqtest_id: question.iqtest.id)
+        if order.new_record?
+          order.state = 'pending'
+          order.amount_cents = question.iqtest.price_cents
+          order.save!
+          Rails.logger.info "Order #{order.id} created for user #{user.id} with state #{order.state}"
         end
 
         render json: { success: true, redirect_url: new_order_payment_path(order) }
@@ -168,9 +142,6 @@ class QuestionsController < ApplicationController
     end
   end
 
-
-
-
   # Démarre un nouveau test et redirige vers la première question du test
   def start_test
     # Trouver ou créer l'utilisateur (ou l'invité)
@@ -178,6 +149,9 @@ class QuestionsController < ApplicationController
 
     # Supprimer les réponses précédentes de l'utilisateur pour ce test
     user.responses.delete_all
+
+    # Réinitialiser les ordres en attente pour l'utilisateur (facultatif, si nécessaire)
+    user.orders.where(state: 'pending').destroy_all
 
     # S'assure que la politique d'autorisation est respectée pour accéder à la première question
     authorize :question, :first_question?
@@ -196,6 +170,7 @@ class QuestionsController < ApplicationController
   end
 
   private
+
   def set_question
     @question = Question.find_by(id: params[:id])
     authorize @question if @question
@@ -220,20 +195,13 @@ class QuestionsController < ApplicationController
       18 => 156, 19 => 165, 20 => 175
     }
 
-    # Calcule le nombre de réponses correctes
     correct_answers_count = user.responses.joins(:option).where(options: { isreponsecorrect: true }).count
-
-    # Obtient le score de QI basé sur le nombre de réponses correctes
-    iq_score = iq_scores[correct_answers_count] || 44 # Default à 44 si le score n'est pas défini (pour les cas où le nombre de réponses correctes pourrait dépasser 20)
-
-    # Renvoie le score de QI et le nombre de réponses correctes
+    iq_score = iq_scores[correct_answers_count] || 44
     { iq: iq_score, correct_answers: correct_answers_count }
   end
 
   def question_option_params
-    # Construisez une liste des clés attendues en fonction des questions associées à cet IQTest
     question_keys = @iqtest.questions.map { |question| "question_#{question.id}_option_id" }
-    # Retourne un tableau de symboles
     question_keys + [:iqtest_id, :id]
   end
 
@@ -255,5 +223,4 @@ class QuestionsController < ApplicationController
     Rails.logger.error "Failed to create GuestUser: #{e.message}"
     nil
   end
-
 end

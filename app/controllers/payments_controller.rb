@@ -3,19 +3,21 @@ class PaymentsController < ApplicationController
   before_action :authorize_order, only: [:new, :create]
   skip_before_action :authenticate_user!, only: [:new, :create]
 
-
   def new
     Rails.logger.info "Displaying payment page for order #{@order.id}"
   end
 
-# app/controllers/payments_controller.rb
   def create
-    @order = Order.find(params[:order_id])
     Rails.logger.info "Processing payment for order #{@order.id}"
 
-    # Mettre à jour l'email de l'order et du GuestUser si nécessaire
+    # Si l'utilisateur n'est pas connecté, met à jour l'email de l'order et du GuestUser
     unless user_signed_in?
       email = params[:email]
+      if email.blank?
+        flash[:alert] = "Email is required."
+        return redirect_to new_order_payment_path(@order)
+      end
+
       @order.update(email: email)
       if @order.responder_type == 'GuestUser'
         guest_user = GuestUser.find(@order.responder_id)
@@ -23,7 +25,7 @@ class PaymentsController < ApplicationController
       end
     end
 
-    # Reste du code pour créer la session Stripe
+    # Créer la session Stripe
     session = Stripe::Checkout::Session.create(
       payment_method_types: ['card'],
       line_items: [{

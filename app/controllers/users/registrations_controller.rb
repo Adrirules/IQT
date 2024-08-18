@@ -1,3 +1,4 @@
+# app/controllers/users/registrations_controller.rb
 class Users::RegistrationsController < Devise::RegistrationsController
   after_action :transfer_guest_user_data, only: :create
 
@@ -10,9 +11,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
   private
 
   def transfer_guest_user_data
-    return unless resource.persisted? && session[:guest_user_id]
+    return unless resource.persisted?
 
-    guest_user = GuestUser.find_by(id: session[:guest_user_id])
+    # Vérifier si un GuestUser existe avec le même email que le nouvel utilisateur
+    guest_user = GuestUser.find_by(email: resource.email)
+
     if guest_user
       Rails.logger.info "Transferring data from guest user #{guest_user.id} to user #{resource.id}"
 
@@ -21,10 +24,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
       guest_user.user_test_scores.update_all(responder_type: 'User', responder_id: resource.id)
 
       guest_user.destroy
-      session.delete(:guest_user_id)
 
       Rails.logger.info "Data successfully transferred from guest user #{guest_user.id} to user #{resource.id}"
     end
+
+    # Supprimer l'ancien guest_user_id de la session s'il existe
+    session.delete(:guest_user_id)
   rescue ActiveRecord::StatementInvalid => e
     Rails.logger.error "Error transferring data: #{e.message}"
   end
