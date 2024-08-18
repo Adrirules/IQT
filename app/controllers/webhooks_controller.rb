@@ -4,41 +4,64 @@ class WebhooksController < ApplicationController
   def stripe
     payload = request.body.read
     sig_header = request.env['HTTP_STRIPE_SIGNATURE']
-    endpoint_secret = ENV['STRIPE_WEBHOOK_SECRET']
+    endpoint_secret = ENV['STRIPE_WEBHOOK_SECRET_KEY']
+
+    Rails.logger.info "Payload: #{payload}"
+    Rails.logger.info "Signature Header: #{sig_header}"
+    Rails.logger.info "Endpoint Secret: #{endpoint_secret}"
 
     begin
-      event = Stripe::Webhook.construct_event(
-        payload, sig_header, endpoint_secret
-      )
+      event = Stripe::Webhook.construct_event(payload, sig_header, endpoint_secret)
     rescue JSON::ParserError => e
-      render json: { message: 'Invalid payload' }, status: 400 and return
+      Rails.logger.error "Invalid payload: #{e.message}"
+      render json: { message: 'Invalid payload' }, status: :bad_request and return
     rescue Stripe::SignatureVerificationError => e
-      render json: { message: 'Invalid signature' }, status: 401 and return
+      Rails.logger.error "Invalid signature: #{e.message}"
+      render json: { message: 'Invalid signature' }, status: :unauthorized and return
     end
 
+    handle_event(event)
+    render json: { message: 'Success' }
+  end
+
+  private
+
+  def handle_event(event)
     case event['type']
     when 'payment_intent.succeeded'
-      payment_intent = event['data']['object']
-      order = Order.find_by(payment_intent_id: payment_intent.id)
-      if order.present?
-        order.update(state: 'paid')
-        OrderMailer.payment_success(order).deliver_now
-      else
-        Rails.logger.error "Order not found for payment intent id: #{payment_intent.id}"
-      end
+      handle_payment_intent_succeeded(event['data']['object'])
     when 'charge.succeeded'
-      charge = event['data']['object']
-      order = Order.find_by(payment_intent_id: charge.payment_intent)
-      if order.present?
+      handle_charge_succeeded(event['data']['object'])
+    else
+      Rails.logger.info "Unhandled event type: #{event['type']}"
+    end
+  end
+
+  def handle_payment_intent_succeeded(payment_intent)
+    order = Order.find_by(payment_intent_id: payment_intent['id'])
+    if order
+      if order.state != 'paid'
         order.update(state: 'paid')
         OrderMailer.payment_success(order).deliver_now
       else
-        Rails.logger.error "Order not found for charge payment intent id: #{charge.payment_intent}"
+        Rails.logger.info "Order already paid. Order ID: #{order.id}"
       end
     else
-      puts "Unhandled event type: #{event['type']}"
+      Rails.logger.error "Order not found for payment intent id: #{payment_intent['id']}. Payload: #{payment_intent}"
     end
+  end
 
-    render json: { message: 'Success' }
+  def handle_charge_succeeded(charge)
+    order = Order.find_by(payment_intent_id: charge['payment_intent'])
+    if order
+      if order.state != 'paid'
+        order.update(state: 'paid')
+        OrderMailer.payment_success(order).deliver_now
+      else
+        Rails.logger.info "Order already paid. Order ID: #{order.id}"
+      end
+    else
+      Rails.logger.error "Order not found for charge payment intent id: #{charge['payment_intent']}. Payload: #{charge}"
+    end
   end
 end

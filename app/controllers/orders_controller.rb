@@ -14,7 +14,9 @@ class OrdersController < ApplicationController
 
       # Trouver ou créer le GuestUser avec l'email collecté
       responder = current_user || GuestUser.find_or_initialize_by(session_id: session[:guest_user_session_id])
-      responder.email = email
+      if responder.email.blank?
+        responder.email = email
+      end
       responder.save!
 
       order = Order.new(iqtest_id: iqtest.id, responder: responder, email: email)
@@ -22,20 +24,23 @@ class OrdersController < ApplicationController
 
       if order.save
         Rails.logger.info "Order #{order.id} created with state #{order.state}"
+        create_stripe_session(order, iqtest)
         redirect_to new_order_payment_path(order)
       else
+        Rails.logger.error "Order creation failed: #{order.errors.full_messages.join(', ')}"
         flash[:alert] = "Unable to create order. Please try again."
         redirect_to iqtests_path
       end
     rescue ActiveRecord::RecordInvalid => e
+      Rails.logger.error "Validation failed: #{e.message}"
       flash[:alert] = "Validation failed: #{e.message}"
       redirect_to new_order_path
+    rescue StandardError => e
+      Rails.logger.error "Unexpected error: #{e.message}"
+      flash[:alert] = "An unexpected error occurred. Please try again."
+      redirect_to iqtests_path
     end
   end
-
-
-
-
 
   def show
     @order = Order.find(params[:id])
@@ -52,10 +57,7 @@ class OrdersController < ApplicationController
     params.require(:order).permit(:email, :iqtest_id)
   end
 
-def create_stripe_session(order, iqtest)
-    # Assure-toi que l'utilisateur a un ID valide
-    return unless order.responder&.id
-
+  def create_stripe_session(order, iqtest)
     session = Stripe::Checkout::Session.create(
       payment_method_types: ['card'],
       line_items: [{
@@ -74,6 +76,7 @@ def create_stripe_session(order, iqtest)
       cancel_url: iqtest_url(iqtest)
     )
 
+    # Mise à jour du checkout_session_id si nécessaire
     order.update!(checkout_session_id: session.id)
   end
 end

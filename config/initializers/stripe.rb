@@ -1,9 +1,7 @@
-# config/initializers/stripe.rb
 Rails.configuration.stripe = {
   publishable_key: ENV['STRIPE_PUBLISHABLE_KEY'],
   secret_key:      ENV['STRIPE_SECRET_KEY'],
   signing_secret:  ENV['STRIPE_WEBHOOK_SECRET_KEY']
-
 }
 
 Stripe.api_key = Rails.configuration.stripe[:secret_key]
@@ -12,6 +10,11 @@ Stripe.api_key = Rails.configuration.stripe[:secret_key]
 require Rails.root.join('app/services/stripe_checkout_session_service.rb')
 
 StripeEvent.signing_secret = Rails.configuration.stripe[:signing_secret]
+
+# Ajoute les logs ici
+Rails.logger.info "Stripe Publishable Key: #{ENV['STRIPE_PUBLISHABLE_KEY']}"
+Rails.logger.info "Stripe Secret Key: #{ENV['STRIPE_SECRET_KEY']}"
+Rails.logger.info "Stripe Webhook Secret Key: #{ENV['STRIPE_WEBHOOK_SECRET_KEY']}"
 
 StripeEvent.configure do |events|
   events.subscribe 'checkout.session.completed', StripeCheckoutSessionService.new

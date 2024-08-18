@@ -5,7 +5,7 @@ class QuestionsController < ApplicationController
   skip_before_action :verify_authenticity_token
   before_action :hide_navbar_and_footer, only: [:show]
   before_action :find_or_create_guest_user
-  after_action :verify_authorized, except: [:index, :show]
+  after_action :verify_authorized, except: [:index, :show, :process_option_selection]
 
   def new
     @iqtest = Iqtest.find(params[:iqtest_id])
