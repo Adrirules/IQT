@@ -1,6 +1,3 @@
-// app/javascript/packs/question_handling.js
-console.log("question_handling.js is loaded");
-
 document.addEventListener('turbolinks:load', function () {
   const optionsContainer = document.getElementById('options-container');
   console.log("Page loaded, initializing option selection handling.");
@@ -16,6 +13,7 @@ document.addEventListener('turbolinks:load', function () {
 
       console.log(`Option selected: Question ID = ${questionId}, Option ID = ${optionId}, IQTest ID = ${iqtestId}`);
 
+      // Envoi des données de sélection d'option au serveur
       fetch('/process_option_selection', {
         method: 'POST',
         headers: {

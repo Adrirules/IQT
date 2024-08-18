@@ -122,7 +122,7 @@ class QuestionsController < ApplicationController
       authorize question, :select_option?
 
       option = question.options.find(params[:option_id])
-      user = current_user || find_or_create_guest_user # Assurez-vous que cette méthode gère correctement les sessions
+      user = current_user || find_or_create_guest_user
 
       if user.nil?
         render json: { success: false, error: "Unable to find or create guest user" }, status: :internal_server_error
@@ -138,15 +138,19 @@ class QuestionsController < ApplicationController
       if next_question
         render json: { success: true, nextQuestionUrl: iqtest_question_path(question.iqtest, next_question) }
       else
-        order = Order.find_or_initialize_by(iqtest_id: question.iqtest.id, responder: user)
-        if order.new_record?
-          order.state = 'pending'
-          order.amount_cents = question.iqtest.price_cents
-          order.save!
-          Rails.logger.info "Order #{order.id} created for user #{user.id} with state #{order.state}"
+        # Vérifiez si une commande existe déjà pour ce test et cet utilisateur
+        order = Order.find_by(iqtest_id: question.iqtest.id, responder: user)
+        unless order
+          order = Order.new(iqtest_id: question.iqtest.id, responder: user, state: 'pending', amount_cents: question.iqtest.price_cents)
+          if order.save
+            Rails.logger.info "Order #{order.id} created for user #{user.id} with state #{order.state}"
+          else
+            Rails.logger.error "Failed to create order: #{order.errors.full_messages.join(', ')}"
+            render json: { success: false, error: "Unable to create order" }, status: :unprocessable_entity
+            return
+          end
         end
 
-        # Assumer que l'email est déjà associé avec le GuestUser à ce stade
         render json: { success: true, redirect_url: new_order_payment_path(order) }
       end
     rescue ActiveRecord::RecordNotFound => e
@@ -163,6 +167,8 @@ class QuestionsController < ApplicationController
       render json: { success: false, error: "An error occurred. Please try again." }, status: :internal_server_error
     end
   end
+
+
 
 
   # Démarre un nouveau test et redirige vers la première question du test
