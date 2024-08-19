@@ -1,38 +1,42 @@
-<div class="navbar navbar-expand-sm navbar-light navbar-lewagon">
-  <div class="container-fluid">
+<nav class="navbar navbar-expand-sm navbar-light navbar-lewagon">
+  <div class="container-fluid d-flex justify-content-between align-items-center">
     <!-- Logo à gauche -->
     <div class="navbar-part left">
       <%= link_to root_path, class: "navbar-brand" do %>
-        <%= image_tag "https://res.cloudinary.com/adrirules/image/upload/v1714419247/IQTlogo.webp" %>
+        <%= image_tag "https://res.cloudinary.com/adrirules/image/upload/v1724086194/LOGOiqtBrainLogo_IQTBrain.png", alt: "IQTest Logo" %>
       <% end %>
     </div>
 
     <!-- Liens à droite -->
-    <div class="navbar-part right">
+    <div class="navbar-part right d-flex align-items-center">
       <% user = current_user || GuestUser.find_by(session_id: session[:session_id]) %>
 
       <% if user_signed_in? %>
-        <div class="btn-ghost">
+        <div class="btn-ghost-nav me-2">
           <%= link_to "Logout", destroy_user_session_path, method: :delete, class: "nav-link" %>
         </div>
       <% else %>
-        <div class="btn-ghost">
-          <%= link_to "Sign up", new_user_registration_path, class: "nav-link" %>
+        <div class="btn-ghost-nav me-2">
+          <%= link_to "Signup", new_user_registration_path, class: "nav-link" %>
         </div>
       <% end %>
 
       <% if user %>
         <% order = Order.find_by(responder: user, state: 'paid') %>
         <% if order %>
-          <div class="btn-flat">
-            <%= link_to "View Your Score", show_score_path(iqtest_id: order.iqtest_id, user_type: user.class.name, user_id: user.id), class: "nav-link" %>
+          <div class="btn-flat-nav">
+            <%= link_to "Score", show_score_path(iqtest_id: order.iqtest_id, user_type: user.class.name, user_id: user.id), class: "nav-link" %>
+          </div>
+        <% else %>
+          <div class="btn-flat-nav">
+            <%= link_to "New Test", first_question_path, class: "nav-link" %>
           </div>
         <% end %>
+      <% else %>
+        <div class="btn-flat-nav">
+          <%= link_to "New Test", first_question_path, class: "nav-link" %>
+        </div>
       <% end %>
-
-      <div class="btn-flat">
-        <%= link_to "New Test", first_question_path, class: "nav-link" %>
-      </div>
     </div>
   </div>
-</div>
+</nav>

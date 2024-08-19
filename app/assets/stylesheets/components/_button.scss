@@ -60,3 +60,46 @@
   background: #4D04C4;
   color: white;
 }
+
+/* Navbar Sticky */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  /* S'assure que la navbar reste au-dessus des autres éléments */
+  background-color: white;
+  /* Ajoutez une couleur de fond si nécessaire pour plus de lisibilité */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  /* Ajoute une légère ombre pour mieux distinguer la navbar */
+}
+
+.btn-ghost-nav {
+  color: #4A4A4A;
+  border: 1px solid #4A4A4A;
+  padding: 0px 10px;
+  border-radius: 50px;
+  font-weight: lighter;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
+  /* Empêche le texte de se diviser sur plusieurs lignes */
+}
+
+.btn-ghost-nav:hover {
+  opacity: 1;
+}
+
+.btn-flat-nav {
+  color: white;
+  padding: 5px 15px;
+  border-radius: 4px;
+  background: #670BFF;
+  transition: background 0.3s ease;
+  white-space: nowrap;
+  /* Empêche le texte de se diviser sur plusieurs lignes */
+}
+
+.btn-flat-nav:hover {
+  background: #4D04C4;
+  color: white;
+}
