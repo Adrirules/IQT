@@ -10,24 +10,44 @@ class PaymentsController < ApplicationController
   def create
     Rails.logger.info "Processing payment for order #{@order.id}"
 
-    # Si l'utilisateur n'est pas connecté, met à jour l'email de l'order et du GuestUser
+    # Si l'utilisateur n'est pas connecté, met à jour l'email de l'ordre et du GuestUser
     unless user_signed_in?
       email = params[:email]
+      Rails.logger.info "Email provided: #{email}"
+
       if email.blank?
         flash[:alert] = "Email is required."
+        Rails.logger.error "No email provided for guest user."
         return redirect_to new_order_payment_path(@order)
       end
 
-      @order.update(email: email)
+      if @order.update(email: email)
+        Rails.logger.info "Order email updated to: #{email}"
+      else
+        Rails.logger.error "Failed to update order email."
+      end
+
       if @order.responder_type == 'GuestUser'
         guest_user = GuestUser.find(@order.responder_id)
-        guest_user.update(email: email) if guest_user.email.blank?
+        if guest_user.email.blank? && guest_user.update(email: email)
+          Rails.logger.info "GuestUser email updated to: #{email}"
+        else
+          Rails.logger.error "Failed to update GuestUser email."
+        end
+      end
+    else
+      # Si l'utilisateur est connecté, on met à jour l'email de l'ordre avec celui de l'utilisateur
+      if @order.update(email: current_user.email)
+        Rails.logger.info "Order email updated to current user email: #{current_user.email}"
+      else
+        Rails.logger.error "Failed to update order email for signed-in user."
       end
     end
 
     # Créer la session Stripe
     session = Stripe::Checkout::Session.create(
       payment_method_types: ['card'],
+      customer_email: @order.email, # Ajout de l'email dans la session Stripe
       line_items: [{
         price_data: {
           currency: 'usd',
@@ -46,8 +66,13 @@ class PaymentsController < ApplicationController
       locale: 'en'
     )
 
-    @order.update(checkout_session_id: session.id)
-    Rails.logger.info "Updated order #{@order.id} with checkout_session_id #{session.id}"
+    # Mise à jour de la commande avec l'ID de session de paiement Stripe
+    if @order.update(checkout_session_id: session.id)
+      Rails.logger.info "Updated order #{@order.id} with checkout_session_id #{session.id}"
+    else
+      Rails.logger.error "Failed to update order with checkout_session_id"
+    end
+
     redirect_to session.url, allow_other_host: true
   rescue Stripe::InvalidRequestError => e
     Rails.logger.error "Stripe error: #{e.message}"

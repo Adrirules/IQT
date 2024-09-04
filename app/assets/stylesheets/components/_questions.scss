@@ -1,47 +1,63 @@
+/* Structure de base mobile-first */
 .container-question {
   background-color: white;
-  width: 100%;
-  padding-right: var(--bs-gutter-x, 5.75rem);
-  padding-left: var(--bs-gutter-x, 5.75rem);
+  padding: 1rem;
   margin-right: auto;
   margin-left: auto;
   box-sizing: border-box;
-  /* Inclut le padding dans la largeur totale */
 }
 
-/* Points de rupture pour la largeur maximale comme Bootstrap */
-@media (min-width: 576px) {
-  .container-custom {
-    max-width: 540px;
+/* Réajustement des options pour mobile (max-width: 767px) */
+@media (max-width: 767px) {
+  .options-card {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+
+  .option-item {
+    width: calc(50% - 10px); /* Ajuste la largeur à 50% moins la marge */
+    margin: 5px; /* Réduit la marge pour permettre deux options par ligne */
   }
 }
 
+/* Augmentation progressive du padding pour les écrans plus grands */
 @media (min-width: 768px) {
-  .container-custom {
-    max-width: 720px;
+  .container-question {
+    padding-right: 3rem;
+    padding-left: 3rem;
+  }
+
+  .option-item {
+    width: 48%; /* Deux éléments par ligne sur les tablettes */
+    margin: 10px;
   }
 }
 
 @media (min-width: 992px) {
-  .container-custom {
-    max-width: 960px;
+  .container-question {
+    padding-right: 4rem;
+    padding-left: 4rem;
+  }
+
+  .option-item {
+    width: 29%; /* Trois éléments par ligne sur les grands écrans */
   }
 }
 
 @media (min-width: 1200px) {
-  .container-custom {
-    max-width: 1140px;
+  .container-question {
+    padding-right: 5.75rem;
+    padding-left: 5.75rem;
   }
-}
 
-@media (min-width: 1400px) {
-  .container-custom {
-    max-width: 1320px;
+  .option-item {
+    width: 50%; /* Deux options par ligne sur les très grands écrans */
   }
 }
 
 .question-card {
-  background-color: $bg-color;
+  background-color: #f8f9fa;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
@@ -49,7 +65,7 @@
 
   .question-image-container img {
     width: 100%;
-    border-radius: $border-radius;
+    border-radius: 10px;
   }
 
   .question-text-container {
@@ -60,42 +76,38 @@
 }
 
 .options-card {
-  display: flex;        /* Active Flexbox pour ce conteneur */
-  flex-wrap: wrap;      /* Permet aux éléments de passer à la ligne suivante si nécessaire */
-  justify-content: space-around; /* Répartit l'espace autour de chaque élément pour un espacement égal */
-  background-color: $bg-color;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  background-color: #f8f9fa;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
   margin: 20px;
-  .option-item {
-    width: 29%;
-    /* Définit une largeur pour chaque élément pour garantir que trois tiennent dans une ligne */
-    text-align: center;
-    /* Centre le texte dans chaque élément */
-    padding: 10px;
-    /* Ajoute un peu de padding pour visualisation */
-    box-sizing: border-box;
-    /* S'assure que le padding et la bordure sont inclus dans la largeur définie */
-    margin: 10px;
-
-    background-color: white;
-    border-radius: 10px;
-    transition: background-color 0.3s;
-    &:hover {
-      background-color: #E4F1FF;
-      cursor: pointer;
-    }
-  }
 }
 
+.option-item {
+  width: calc(33.33% - 10px); /* Par défaut, prend toute la largeur sur les très petits écrans */
+  text-align: center;
+  padding: 10px;
+  box-sizing: border-box;
+  margin: 10px;
+  background-color: white;
+  border-radius: 10px;
+  transition: background-color 0.3s;
+}
+
+.option-item:hover {
+  background-color: #E4F1FF;
+  cursor: pointer;
+}
 
 .pagination-container .page-link {
-  background-color: $bg-color;
-  border-radius: $border-radius;
+  background-color: #f9f9f9;
+  border-radius: 10px;
   margin-right: 5px;
+}
 
-  &.answered {
-    background-color: darken($bg-color, 10%); // Assombrir la couleur pour les questions répondues
-  }
+.pagination-container .page-link.answered {
+  background-color: #ccc;
 }

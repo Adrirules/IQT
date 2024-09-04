@@ -1,41 +1,88 @@
-<!-- app/views/payments/new.html.erb -->
-<h1>Complete Your Payment</h1>
+<div class="payment-page">
+  <h1>Unlock your personalized IQ results</h1>
 
-<p>To view your IQ test results, please complete the payment below:</p>
+  <p>To view your IQ test results, please complete the payment below:</p>
 
-<div id="payment-form">
-  <form action="<%= order_payments_path(@order) %>" method="post" id="payment-form">
-    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+  <div id="payment-form">
+    <form action="<%= order_payments_path(@order) %>" method="post" id="payment-form">
+      <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
 
-    <% unless user_signed_in? %>
-      <div class="field">
-        <%= label_tag :email, 'Email Address:' %>
-        <%= email_field_tag :email, nil, required: true %>
+      <!-- Si l'utilisateur est connecté, afficher l'email sans possibilité de modification -->
+      <% if user_signed_in? %>
+        <div class="field">
+          <%= label_tag :email, 'Your Email Address:' %>
+          <%= email_field_tag :email, current_user.email, disabled: true, class: 'form-control' %>
+        </div>
+      <% else %>
+        <!-- Si l'utilisateur n'est pas connecté, lui demander de fournir un email -->
+        <div class="field">
+          <%= label_tag :email, 'Email Address:' %>
+          <%= email_field_tag :email, @order.email || nil, placeholder: 'Enter your email', required: true, class: 'form-control' %>
+        </div>
+      <% end %>
+
+      <!-- Stripe Card Element -->
+      <div id="card-element">
+        <!-- Stripe Element will be inserted here. -->
       </div>
-    <% end %>
 
-    <div id="card-element">
-      <!-- A Stripe Element will be inserted here. -->
+      <!-- Message d'erreur pour Stripe -->
+      <div id="card-errors" role="alert"></div>
+
+      <!-- Bouton de soumission -->
+      <button type="submit" id="submit-button" class="btn btn-primary">Get my personalized IQ report</button>
+    </form>
+  </div>
+
+  <div>
+    <p>We respect your privacy. Your email will only be used to send you your test results, and will never be shared.</p>
+  </div>
+
+  <div class="testimonials">
+    <!-- Review 1 -->
+    <div class="testimonial-card">
+      <p>"The insights I received were incredibly accurate and helpful! It really opened my eyes to my strengths." - Julie, Paris</p>
     </div>
 
-    <!-- Used to display form errors. -->
-    <div id="card-errors" role="alert"></div>
+    <!-- Review 2 -->
+    <div class="testimonial-card">
+      <p>"I was amazed by the detailed results. It helped me understand more about my abilities." - Adrian, London</p>
+    </div>
 
-    <button type="submit">Submit Payment</button>
-  </form>
+    <!-- Review 3 -->
+    <div class="testimonial-card">
+      <p>"Quick, easy, and the results were very insightful!" - Maxime, New York</p>
+    </div>
+
+    <!-- Review 4 -->
+    <div class="testimonial-card">
+      <p>"A very valuable test." - Etienne, Sydney</p>
+    </div>
+  </div>
+
+  <!-- Affichage conditionnel du message de paiement en attente -->
+  <div id="payment-pending-message" style="display: none;">
+    <p>Your payment is being processed, please wait...</p>
+  </div>
 </div>
 
+
+
+
+<!-- Affichage conditionnel du message de paiement en attente -->
+<div id="payment-pending-message" style="display: none;">
+  <p>Your payment is being processed, please wait...</p>
+</div>
 
 <script src="https://js.stripe.com/v3/"></script>
 <script>
   var stripe = Stripe('<%= Rails.application.credentials.dig(:stripe, :public_key) %>');
 
   var elements = stripe.elements();
-
   var card = elements.create('card');
-
   card.mount('#card-element');
 
+  // Gestion des erreurs de la carte
   card.on('change', function(event) {
     var displayError = document.getElementById('card-errors');
     if (event.error) {
@@ -45,14 +92,22 @@
     }
   });
 
+  // Gestion du formulaire de paiement
   var form = document.getElementById('payment-form');
   form.addEventListener('submit', function(event) {
     event.preventDefault();
 
+    // Désactiver le bouton et afficher un message de chargement
+    var submitButton = document.getElementById('submit-button');
+    submitButton.disabled = true;
+    document.getElementById('payment-pending-message').style.display = 'block';
+
     stripe.createToken(card).then(function(result) {
       if (result.error) {
+        // Afficher les erreurs de Stripe
         var errorElement = document.getElementById('card-errors');
         errorElement.textContent = result.error.message;
+        submitButton.disabled = false; // Réactiver le bouton en cas d'erreur
       } else {
         stripeTokenHandler(result.token);
       }
