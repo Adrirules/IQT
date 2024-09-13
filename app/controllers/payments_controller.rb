@@ -54,7 +54,7 @@ class PaymentsController < ApplicationController
           product_data: {
             name: @order.iqtest.name,
             description: @order.iqtest.description,
-            images: [@order.iqtest.image.attached? ? url_for(@order.iqtest.image) : nil].compact
+            images: ['https://res.cloudinary.com/adrirules/image/upload/v1716276968/OIG1.e77.jpg']
           },
           unit_amount: @order.amount_cents,
         },

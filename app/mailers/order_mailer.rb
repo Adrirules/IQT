@@ -1,5 +1,5 @@
 class OrderMailer < ApplicationMailer
-   default from: 'no-reply@iqtestbrain.com'
+   default from: 'hello@iqtestbrain.com'
 
   def payment_success(order)
     @order = order
