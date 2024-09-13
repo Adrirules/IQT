@@ -50,8 +50,8 @@
     "svgo": "^3.3.2"
   },
   "optionalDependencies": {
-    "fsevents": ""
-  },
+  "fsevents": "^1.2.13"
+},
   "babel": {
     "presets": "@babel/preset-env"
   },
@@ -61,8 +61,8 @@
     "build": "webpack --config ./config/webpack/webpack.config.js"
   },
   "engines": {
-    "node": ">=14.17.0 <15",
-    "npm": ">=6.14.13 <7"
+    "node": "16.x",
+    "npm": "8.x"
   },
   "license": "MIT"
 }
