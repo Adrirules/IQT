@@ -12,12 +12,19 @@
   .options-card {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: space-between;
+    align-items: stretch;
   }
 
   .option-item {
-    width: calc(50% - 10px); /* Ajuste la largeur à 50% moins la marge */
-    margin: 5px; /* Réduit la marge pour permettre deux options par ligne */
+    width: calc(33.33% - 10px);
+    /* Ajuste la largeur à 33% avec marge */
+    margin: 5px;
+    /* Réduit la marge */
+    padding: 5px;
+    background: white;
+    border-radius: 5px;
+    text-align: center;
   }
 }
 
@@ -29,8 +36,12 @@
   }
 
   .option-item {
-    width: 48%; /* Deux éléments par ligne sur les tablettes */
-    margin: 10px;
+    width: calc(33.33% - 10px);
+    margin: 5px;
+    padding: 5px;
+    background: white;
+    border-radius: 5px;
+    text-align: center;
   }
 }
 
@@ -41,7 +52,12 @@
   }
 
   .option-item {
-    width: 29%; /* Trois éléments par ligne sur les grands écrans */
+    width: calc(33.33% - 10px);
+    margin: 5px;
+    padding: 5px;
+    background: white;
+    border-radius: 5px;
+    text-align: center;
   }
 }
 
@@ -52,7 +68,12 @@
   }
 
   .option-item {
-    width: 50%; /* Deux options par ligne sur les très grands écrans */
+    width: calc(33.33% - 10px);
+    margin: 5px;
+    padding: 5px;
+    background: white;
+    border-radius: 5px;
+    text-align: center;
   }
 }
 
@@ -61,18 +82,16 @@
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  margin: 20px;
+  margin: 20px 0px;
+}
 
-  .question-image-container img {
-    width: 100%;
-    border-radius: 10px;
-  }
+.question-image-container img {
+  width: 100%;
+  border-radius: 10px;
+}
 
-  .question-text-container {
-    h1 {
-      font-size: 1.5rem;
-    }
-  }
+.question-text-container h1 {
+  font-size: 1.5rem;
 }
 
 .options-card {
@@ -83,23 +102,34 @@
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  margin: 20px;
+  margin: 20px 0px;
 }
 
-.option-item {
-  width: calc(33.33% - 10px); /* Par défaut, prend toute la largeur sur les très petits écrans */
+/* Applique display: contents pour ignorer visuellement le form */
+.options-card form {
+  display: contents;
+}
+
+.options-card form .option-item {
+  width: calc(33.33% - 10px);
+  /* Par défaut, prend toute la largeur sur les très petits écrans */
   text-align: center;
   padding: 10px;
   box-sizing: border-box;
-  margin: 10px;
+  margin: 10px 0px;
   background-color: white;
   border-radius: 10px;
   transition: background-color 0.3s;
 }
 
-.option-item:hover {
+.options-card form .option-item:hover {
   background-color: #E4F1FF;
   cursor: pointer;
+}
+
+.option-item-text {
+  font-size: 9px;
+  margin-bottom: 0px;
 }
 
 .pagination-container .page-link {

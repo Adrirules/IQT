@@ -1,4 +1,4 @@
-<div class="container-question">
+<div class="container-question-show-score">
   <h1>Your IQ Score is <%= @iq_score %></h1>
   <h2>Correct Answers: <%= @score %> out of <%= @questions.count %></h2>
 
@@ -6,14 +6,14 @@
     <div class="row"> <!-- Chaque ligne contient une question et ses options -->
       <!-- Section pour la question -->
       <div class="col-md-6">
-        <div class="question-card">
+        <div class="question-card-show-score">
           <% if question.imageq.attached? %>
-            <div id="question-text-container">
+            <div id="question-text-container-show-score">
               <h3>Question <%= index + 1 %> :</h3>
             </div>
             <%= image_tag question.imageq, class: "img-fluid", alt: "Image de la question" %>
           <% else %>
-            <div id="question-text-container">
+            <div id="question-text-container-show-score">
               <h3>Question <%= index + 1 %></h3>
             </div>
           <% end %>
@@ -22,18 +22,18 @@
 
       <!-- Section pour les options de cette question spécifique -->
       <div class="col-md-6">
-        <div class="options-card">
+        <div class="options-card-show-score">
           <% question.options.each do |option| %>
-            <div class="<%= 'option-item ' unless current_user&.admin? %><%= 'bg-success' if option.isreponsecorrect %><%= 'bg-danger' if @responses_map[question.id] == option.id && !option.isreponsecorrect %>">
+            <div class="<%= 'option-item-show-score ' unless current_user&.admin? %><%= 'bg-success' if option.isreponsecorrect %><%= 'bg-danger' if @responses_map[question.id] == option.id && !option.isreponsecorrect %>">
               <% if option.image.attached? %>
                 <%= image_tag option.image, class: "img-fluid", alt: "Image de l'option" %>
               <% end %>
               <p><%= option.reponse %></p>
               <% if option.id == @responses_map[question.id] %>
-                <span>(Your choice)</span>
+                <span class="option-item-text-show-score">(Your choice)</span>
               <% end %>
               <% if option.isreponsecorrect %>
-                <span>(Correct)</span>
+                <span class="option-item-text-show-score">(Correct)</span>
               <% end %>
             </div>
           <% end %>

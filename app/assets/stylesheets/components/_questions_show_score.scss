@@ -1,0 +1,116 @@
+/* Structure de base mobile-first */
+.container-question-show-score {
+  background-color: white;
+  padding: 1rem;
+  margin-right: auto;
+  margin-left: auto;
+  box-sizing: border-box;
+}
+
+/* Réajustement des options pour mobile (max-width: 767px) */
+@media (max-width: 767px) {
+  .options-card-show-score {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    /* Espace fixe entre les éléments */
+    align-items: stretch;
+    /* Aligne les options à la même hauteur */
+  }
+
+  .option-item-show-score {
+    width: calc(33.33% - 10px);
+    /* Par défaut, prend toute la largeur sur les très petits écrans */
+    margin: 5px;
+    /* Réduit la marge pour permettre deux options par ligne */
+    padding: 5px;
+    background: white;
+    border-radius: 5px;
+    text-align: center;
+  }
+}
+
+/* Augmentation progressive du padding pour les écrans plus grands */
+@media (min-width: 768px) {
+  .container-question-show-score {
+    padding-right: 3rem;
+    padding-left: 3rem;
+  }
+
+  .option-item-show-score {
+    width: calc(33.33% - 10px);
+    /* Par défaut, prend toute la largeur sur les très petits écrans */
+    margin: 5px;
+    /* Réduit la marge pour permettre deux options par ligne */
+    padding: 5px;
+    background: white;
+    border-radius: 5px;
+    text-align: center;
+  }
+}
+
+@media (min-width: 992px) {
+  .container-question-show-score {
+    padding-right: 4rem;
+    padding-left: 4rem;
+  }
+
+  .option-item-show-score {
+    width: calc(33.33% - 10px);
+    /* Par défaut, prend toute la largeur sur les très petits écrans */
+    margin: 5px;
+    /* Réduit la marge pour permettre deux options par ligne */
+    padding: 5px;
+    background: white;
+    border-radius: 5px;
+    text-align: center;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container-question-show-score {
+    padding-right: 5.75rem;
+    padding-left: 5.75rem;
+  }
+
+  .option-item-show-score {
+    width: calc(33.33% - 10px);
+    /* Par défaut, prend toute la largeur sur les très petits écrans */
+    margin: 5px;
+    /* Réduit la marge pour permettre deux options par ligne */
+    padding: 5px;
+    background: white;
+    border-radius: 5px;
+    text-align: center;
+  }
+}
+
+.question-card-show-score {
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 20px 0px;
+
+  .question-image-container-show-score img {
+    width: 100%;
+    border-radius: 10px;
+  }
+
+  .question-text-container-show-score {
+    h1 {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+.options-card-show-score {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 20px 0px;
+}

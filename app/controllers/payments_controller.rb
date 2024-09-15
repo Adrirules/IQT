@@ -44,10 +44,17 @@ class PaymentsController < ApplicationController
       end
     end
 
+    # Créer un Customer Stripe avec l'email de l'ordre
+    customer = Stripe::Customer.create({
+      email: @order.email,
+      name: @order.email || "Customer #{@order.id}"
+    })
+    Rails.logger.info "Created Stripe customer with ID: #{customer.id}"
+
     # Créer la session Stripe
     session = Stripe::Checkout::Session.create(
       payment_method_types: ['card'],
-      customer_email: @order.email, # Ajout de l'email dans la session Stripe
+      customer: customer.id, # Utilise l'ID du Customer Stripe
       line_items: [{
         price_data: {
           currency: 'usd',
