@@ -5,6 +5,12 @@
   margin-right: auto;
   margin-left: auto;
   box-sizing: border-box;
+  min-height: 100vh;
+  /* Prend toute la hauteur de l'écran */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* Assure une bonne répartition verticale */
 }
 
 /* Réajustement des options pour mobile (max-width: 767px) */
@@ -18,9 +24,7 @@
 
   .option-item {
     width: calc(33.33% - 10px);
-    /* Ajuste la largeur à 33% avec marge */
     margin: 5px;
-    /* Réduit la marge */
     padding: 5px;
     background: white;
     border-radius: 5px;
@@ -112,7 +116,6 @@
 
 .options-card form .option-item {
   width: calc(33.33% - 10px);
-  /* Par défaut, prend toute la largeur sur les très petits écrans */
   text-align: center;
   padding: 10px;
   box-sizing: border-box;

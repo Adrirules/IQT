@@ -4,11 +4,12 @@
 
   <div class="row">
     <div class="col-md-6">
-      <div class="question-card">
-        <!-- Conteneur du texte de la question -->
+       <!-- Conteneur du texte de la question -->
         <div id="question-text-container">
-          <h1 id="question-text"><strong>Question:</strong> <%= @question.contentq %></h1>
+          <h1 id="question-text"><strong><%= @question.contentq %> : </h1></strong>
         </div>
+
+      <div class="question-card">
 
         <!-- Conteneur de l'image de la question -->
         <div id="question-image-container">
@@ -27,6 +28,9 @@
 
     <!-- Conteneur des options -->
     <div class="col-md-6" id="options-container">
+      <div id="option-text-container">
+        <h1 id="option-text"><strong>Options :</h1></strong>
+      </div>
       <div class="options-card">
         <% @options.each do |option| %>
           <% form_id = (@question == @iqtest.questions.last) ? 'last-question-form' : "option-form-#{option.id}" %>

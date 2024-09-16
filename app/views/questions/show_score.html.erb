@@ -1,16 +1,16 @@
 <div class="container-question-show-score">
-  <h1>Your IQ Score is <%= @iq_score %></h1>
+  <h1><strong>Your IQ Score is <%= @iq_score %></strong></h1>
   <h2>Correct Answers: <%= @score %> out of <%= @questions.count %></h2>
 
   <% @questions.each_with_index do |question, index| %>
     <div class="row"> <!-- Chaque ligne contient une question et ses options -->
       <!-- Section pour la question -->
       <div class="col-md-6">
+        <div id="question-text-container-show-score">
+          <h3><strong>Question <%= index + 1 %> :</strong></h3>
+        </div>
         <div class="question-card-show-score">
           <% if question.imageq.attached? %>
-            <div id="question-text-container-show-score">
-              <h3>Question <%= index + 1 %> :</h3>
-            </div>
             <%= image_tag question.imageq, class: "img-fluid", alt: "Image de la question" %>
           <% else %>
             <div id="question-text-container-show-score">
@@ -22,6 +22,9 @@
 
       <!-- Section pour les options de cette question spécifique -->
       <div class="col-md-6">
+        <div id="option-text-container-show-score">
+          <h3 id="option-text-show-score"><strong>Options :</h3></strong>
+        </div>
         <div class="options-card-show-score">
           <% question.options.each do |option| %>
             <div class="<%= 'option-item-show-score ' unless current_user&.admin? %><%= 'bg-success' if option.isreponsecorrect %><%= 'bg-danger' if @responses_map[question.id] == option.id && !option.isreponsecorrect %>">
