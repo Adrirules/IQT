@@ -5,7 +5,7 @@ class QuestionsController < ApplicationController
   skip_before_action :verify_authenticity_token
   before_action :hide_navbar_and_footer, only: [:show]
   before_action :find_or_create_guest_user
-  after_action :verify_authorized, except: [:index, :show, :process_option_selection]
+  after_action :verify_authorized, except: [:index, :show, :process_]
 
   def new
     @iqtest = Iqtest.find(params[:iqtest_id])
@@ -32,6 +32,24 @@ class QuestionsController < ApplicationController
     authorize @question
     @options = @question.options.sort_by { |option| option.reponse.downcase }
     @options_creatable = policy(@question).create_option?
+
+    # Vérifie s'il y a un utilisateur connecté ou un utilisateur invité
+    if user_signed_in?
+      @responses_map = current_user.responses.joins(:question)
+                        .where(questions: { iqtest_id: @iqtest.id })
+                        .pluck(:question_id, :option_id)
+                        .to_h
+    else
+      guest_user = guest_user # Méthode définie dans ApplicationController
+      if guest_user
+        @responses_map = guest_user.responses.joins(:question)
+                          .where(questions: { iqtest_id: @iqtest.id })
+                          .pluck(:question_id, :option_id)
+                          .to_h
+      else
+        @responses_map = {}
+      end
+    end
   end
 
   def first_question
@@ -195,8 +213,18 @@ class QuestionsController < ApplicationController
       18 => 156, 19 => 165, 20 => 175
     }
 
-    correct_answers_count = user.responses.joins(:option).where(options: { isreponsecorrect: true }).count
+    # Vérification des réponses correctes
+    correct_answers = user.responses.joins(:option).where(options: { isreponsecorrect: true })
+
+    # Afficher les réponses correctes pour debug
+    Rails.logger.info("Correct answers for user #{user.id}: #{correct_answers.pluck(:id)}")
+
+    # Compte des bonnes réponses
+    correct_answers_count = correct_answers.count
+
+    # Calcul du score de QI basé sur les bonnes réponses
     iq_score = iq_scores[correct_answers_count] || 44
+
     { iq: iq_score, correct_answers: correct_answers_count }
   end
 

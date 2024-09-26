@@ -44,15 +44,14 @@
               <% if option.image.attached? %>
                 <%= cl_image_tag option.image.key, class: "img-fluid", alt: "Image de l'option" %>
               <% end %>
-              <% if current_user&.admin? %>
-                <%= option.reponse %> (Correct: <%= option.isreponsecorrect ? 'Yes' : 'No' %>)
-                <% if policy(option).edit? %>
-                  <%= link_to 'Edit', edit_iqtest_question_option_path(@iqtest, @question, option), class: "btn btn-sm btn-outline-secondary" %>
-                <% end %>
-                <% if policy(option).destroy? %>
-                  <%= button_to 'Delete', iqtest_question_option_destroy_path(@iqtest, @question, option), method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-sm btn-danger" %>
-                <% end %>
-              <% end %>
+            </div>
+          <% end %>
+          <!-- Boutons "Edit" et "Delete" en dehors de la zone cliquable de l'option -->
+          <% if current_user&.admin? %>
+            <div class="admin-actions">
+              <%= option.reponse %> (Correct: <%= option.isreponsecorrect ? 'Yes' : 'No' %>)
+              <%= link_to 'Edit', edit_iqtest_question_option_path(@iqtest, @question, option), class: "btn btn-sm btn-outline-secondary" %>
+              <%= button_to 'Delete', iqtest_question_option_destroy_path(@iqtest, @question, option), method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-sm btn-danger" %>
             </div>
           <% end %>
         <% end %>
@@ -61,16 +60,21 @@
   </div>
 </div>
 
+
 <!-- Formulaire caché pour l'achat -->
 <%= form_with url: orders_path, id: 'order-form', method: :post, local: true do |f| %>
   <%= hidden_field_tag 'iqtest_id', @iqtest.id %>
 <% end %>
 
-<%= link_to 'Back to IQTest', iqtest_path(@iqtest), class: "btn btn-secondary" %>
 
+<% if current_user&.admin? %>
+  <%= link_to 'Back to IQTest', iqtest_path(@iqtest), class: "btn btn-secondary" %>
+<% end %>
 <!-- Pagination -->
 <div class="pagination">
   <% @iqtest.questions.each_with_index do |question, index| %>
-    <%= link_to "Question #{index + 1}", iqtest_question_path(@iqtest, question), class: "page-link" %>
+    <% answered_class = @responses_map[question.id] ? "answered" : "not-answered" %>
+    <%= link_to "Question #{index + 1}", iqtest_question_path(@iqtest, question), class: "page-link #{answered_class}" %>
   <% end %>
 </div>
+
