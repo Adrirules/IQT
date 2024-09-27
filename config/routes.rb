@@ -53,7 +53,7 @@ Rails.application.routes.draw do
 
   # Ajoute les routes pour le CRUD de la ressource IqTest
   resources :iqtests do
-    resources :questions, only: [:new, :create,:show, :edit, :update] do
+    resources :questions, only: [:new, :create,:show, :edit, :update, :destroy] do
       resources :options, only: [:new, :create, :show, :edit, :update]
     end
   end

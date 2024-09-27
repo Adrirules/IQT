@@ -52,6 +52,25 @@ class QuestionsController < ApplicationController
     end
   end
 
+  def update
+    @question = Question.find(params[:id])
+    authorize @question
+
+    if @question.update(question_params)
+      redirect_to iqtest_question_path(@iqtest, @question), notice: 'Question was successfully updated.'
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    @question = Question.find(params[:id])
+    authorize @question
+
+    @question.destroy
+    redirect_to iqtest_path(@iqtest), notice: 'Question was successfully deleted.'
+  end
+
   def first_question
     authorize :question, :first_question?
     first_iqtest = Iqtest.first

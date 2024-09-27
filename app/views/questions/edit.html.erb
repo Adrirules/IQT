@@ -17,6 +17,11 @@
     <%= f.text_area :contentq %>
   </div>
 
+  <div class="field">
+    <%= f.label :imageq %>
+    <%= f.file_field :imageq %> <!-- Champ pour téléverser l'image -->
+  </div>
+
   <div class="actions">
     <%= f.submit 'Update Question' %>
   </div>
