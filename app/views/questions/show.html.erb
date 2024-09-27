@@ -33,10 +33,10 @@
       </div>
       <div class="options-card">
         <% @options.each do |option| %>
-          <% form_id = (@question == @iqtest.questions.last) ? 'last-question-form' : "option-form-#{option.id}" %>
           <% selected_class = @responses_map[@question.id] == option.id ? 'selected-option' : '' %>
+          <% form_id = (@question == @iqtest.questions.last) ? 'last-question-form' : "option-form-#{option.id}" %>
           <%= form_with url: process_option_selection_path, id: form_id, method: :post, local: true do |f| %>
-            <div class="option-item" data-option-id="<%= option.id %>" data-question-id="<%= @question.id %>" data-iqtest-id="<%= @iqtest.id %>">
+            <div class="option-item <%= selected_class %>" data-option-id="<%= option.id %>" data-question-id="<%= @question.id %>" data-iqtest-id="<%= @iqtest.id %>">
               <%= hidden_field_tag 'question_id', @question.id %>
               <%= hidden_field_tag 'option_id', option.id %>
               <!-- Bouton de soumission caché -->
@@ -45,14 +45,6 @@
               <% if option.image.attached? %>
                 <%= cl_image_tag option.image.key, class: "img-fluid", alt: "Image de l'option" %>
               <% end %>
-            </div>
-          <% end %>
-          <!-- Boutons "Edit" et "Delete" en dehors de la zone cliquable de l'option -->
-          <% if current_user&.admin? %>
-            <div class="admin-actions">
-              <%= option.reponse %> (Correct: <%= option.isreponsecorrect ? 'Yes' : 'No' %>)
-              <%= link_to 'Edit', edit_iqtest_question_option_path(@iqtest, @question, option), class: "btn btn-sm btn-outline-secondary" %>
-              <%= button_to 'Delete', iqtest_question_option_destroy_path(@iqtest, @question, option), method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-sm btn-danger" %>
             </div>
           <% end %>
         <% end %>

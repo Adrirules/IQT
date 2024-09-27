@@ -133,6 +133,7 @@
 /* Style pour les options déjà sélectionnées */
 .options-card form .option-item.selected-option {
   background-color: #E4F1FF;
+  border: 2px solid #007BFF; /* Bordure pour rendre l'option plus visible */
 }
 
 .option-item-text {
