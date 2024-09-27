@@ -34,6 +34,7 @@
       <div class="options-card">
         <% @options.each do |option| %>
           <% form_id = (@question == @iqtest.questions.last) ? 'last-question-form' : "option-form-#{option.id}" %>
+          <% selected_class = @responses_map[@question.id] == option.id ? 'selected-option' : '' %>
           <%= form_with url: process_option_selection_path, id: form_id, method: :post, local: true do |f| %>
             <div class="option-item" data-option-id="<%= option.id %>" data-question-id="<%= @question.id %>" data-iqtest-id="<%= @iqtest.id %>">
               <%= hidden_field_tag 'question_id', @question.id %>

@@ -40,7 +40,7 @@ class QuestionsController < ApplicationController
                         .pluck(:question_id, :option_id)
                         .to_h
     else
-      guest_user = guest_user # Méthode définie dans ApplicationController
+      guest_user = find_or_create_guest_user # Méthode définie dans ApplicationController
       if guest_user
         @responses_map = guest_user.responses.joins(:question)
                           .where(questions: { iqtest_id: @iqtest.id })

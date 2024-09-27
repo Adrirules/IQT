@@ -130,6 +130,11 @@
   cursor: pointer;
 }
 
+/* Style pour les options déjà sélectionnées */
+.options-card form .option-item.selected-option {
+  background-color: #E4F1FF;
+}
+
 .option-item-text {
   font-size: 9px;
   margin-bottom: 0px;

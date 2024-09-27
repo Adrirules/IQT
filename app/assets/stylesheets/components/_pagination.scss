@@ -2,12 +2,15 @@
   display: flex;
   justify-content: center;
   margin: 20px 0;
+  flex-wrap: wrap;
+  /* Permet d'aller à la ligne */
 }
 
 .page-link {
   display: inline-block;
   padding: 10px 15px;
-  margin: 0 5px;
+  margin: 5px;
+  /* Ajuster les marges pour mieux espacer les liens */
   border-radius: 5px;
   text-decoration: none;
   color: #007BFF;
@@ -22,13 +25,15 @@
 }
 
 .page-link.answered {
-  background-color: #28a745; /* Vert pour les questions répondues */
+  background-color: #6509F9;
+  /* Vert pour les questions répondues */
   color: #fff;
-  border-color: #28a745;
+  border-color: #6509F9;
 }
 
 .page-link.not-answered {
-  background-color: #dc3545; /* Rouge pour les questions non répondues */
-  color: #fff;
-  border-color: #dc3545;
+  background-color: #F4F4F4;
+  /* Rouge pour les questions non répondues */
+  color: #000000;
+  border-color: #6509F9;
 }
