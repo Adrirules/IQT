@@ -61,7 +61,7 @@ class PaymentsController < ApplicationController
           product_data: {
             name: @order.iqtest.name,
             description: @order.iqtest.description,
-            images: ['https://res.cloudinary.com/adrirules/image/upload/v1716276968/OIG1.e77.jpg']
+            images: ['https://res.cloudinary.com/adrirules/image/upload/v1728665397/IQTestBrainCertificateSpecimen.png']
           },
           unit_amount: @order.amount_cents,
         },

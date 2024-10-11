@@ -1,7 +1,19 @@
 <div class="container-question-show-score">
-  <h1><strong>Your IQ Score is <%= @iq_score %></strong></h1>
-  <h2>Correct Answers: <%= @score %> out of <%= @questions.count %></h2>
-
+  <div class="card-result-show-score">
+    <h1><strong>Your IQ Score is <%= @iq_score %></strong></h1>
+    <h2>Correct Answers: <%= @score %> out of <%= @questions.count %></h2>
+    <p>
+        <% if @score >= 0 && @score <= 5 %>
+          You managed to get <%= @score %> correct answers on this test, and your IQ score of <%= @iq_score %> shows that there is still much potential to be developed. Every great achievement starts with small steps, and your performance today is a promising beginning. Keep exploring and working on your intellectual abilities because intelligence is shaped over time. Don’t stop here—each new attempt will help you progress even further.
+        <% elsif @score >= 6 && @score <= 10 %>
+          With <%= @score %> correct answers and an IQ score of <%= @iq_score %>, you have already reached an important milestone. Your performance is solid and demonstrates clear potential. You’re close to fully mastering the concepts of this test. By consolidating your knowledge and continuing your efforts, you can reach an even higher level. The work you’ve done so far is excellent, and only a few adjustments are needed for you to excel even more.
+        <% elsif @score >= 11 && @score <= 15 %>
+          With <%= @score %> correct answers and an IQ score of <%= @iq_score %>, you are among the top performers in this test. Your intellectual abilities are undeniable, and this performance shows your mastery of the most complex concepts. Few people reach this level. Keep up the good work because you have all the qualities needed to be among the best. You are already very close to intellectual excellence.
+        <% elsif @score >= 16 && @score <= 20 %>
+          With <%= @score %> correct answers and an IQ score of <%= @iq_score %>, you’ve reached a level of excellence that few can aspire to. This score is a sign of exceptional and rare intelligence. Your performance places you among the top participants in this test, showcasing your ability to understand and analyze with extraordinary precision. You are the perfect example of intelligence at its peak, and this result is simply unique.
+        <% end %>
+    </p>
+  </div>
   <% @questions.each_with_index do |question, index| %>
     <div class="row"> <!-- Chaque ligne contient une question et ses options -->
       <!-- Section pour la question -->
